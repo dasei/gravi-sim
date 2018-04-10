@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.concurrent.SynchronousQueue;
 
 public class Main {
 	
@@ -7,21 +8,21 @@ public class Main {
 	private static Window window;
 	
 	public static void main(String[] args){
-		bodies = new ArrayList<Body>();
+		//bodies = new ArrayList<Body>();
 		
 		window = new Window();
 		window.startRepaintThread();
 		
-		Scenarios.loadSolarsystem();
+		bodies = Scenarios.loadRandom(100);
 //		bodies.add(new Body(5.9E24, 0, 150E9, -30000, 0, false));
 
 		try{
-			Thread.sleep(2000);
+			Thread.sleep(3000);
 		}catch(Exception e){}
 
 		
 		while(true){
-			calcIteration(1);
+			calcIteration(0.1);
 			
 //			try{
 //				Thread.sleep(1);
@@ -29,6 +30,7 @@ public class Main {
 		}
 	}
 	
+	//private static long iterations = 0;
 	public static void calcIteration(double timeDeltaSeconds){
 		
 		double pi = Math.PI;
@@ -37,7 +39,9 @@ public class Main {
 		for(int bI = 0; bI < bodies.size(); bI++) {
 			for(int b2I = bI + 1; b2I < bodies.size(); b2I++) {
 				b1 = bodies.get(bI);
-				b2 = bodies.get(b2I);			
+				b2 = bodies.get(b2I);
+				
+				
 				
 				//calc distance and directional force
 				double distance = calcDistance(b1, b2);				
@@ -72,38 +76,52 @@ public class Main {
 //				//System.out.println(Math.toDegrees(degrB2));
 //				System.out.println();
 				
+				b1.addForce(forceB1X, forceB1Y);
+				b2.addForce(forceB2X, forceB2Y);
+				
+				
 				// F / m = a
 				// v = a * t
 //				b1.vx += (forceB1X / b1.mass) * timeDeltaSeconds;
 //				b1.vy += (forceB1Y / b1.mass) * timeDeltaSeconds;
-				b1.addSpeed(
-						(forceB1X / b1.mass) * timeDeltaSeconds,
-						(forceB1Y / b1.mass) * timeDeltaSeconds
-					);
-//				b2.vx += (forceB2X / b2.mass) * timeDeltaSeconds;
-//				b2.vy += (forceB2Y / b2.mass) * timeDeltaSeconds;
-				b2.addSpeed(
-						(forceB2X / b2.mass) * timeDeltaSeconds,
-						(forceB2Y / b2.mass) * timeDeltaSeconds
-					);
-				
-				// s = v * t
-//				b1.x += b1.vx * timeDeltaSeconds;
-//				b1.y += b1.vy * timeDeltaSeconds;
-				b1.addPos(
-						b1.vx * timeDeltaSeconds,
-						b1.vy * timeDeltaSeconds
-					);
 				
 				
-//				b2.x += b2.vx * timeDeltaSeconds;
-//				b2.y += b2.vy * timeDeltaSeconds;
-				b2.addPos(
-						b2.vx * timeDeltaSeconds,
-						b2.vy * timeDeltaSeconds
-					);
+				
+//				b1.addSpeed(
+//						(forceB1X / b1.mass) * timeDeltaSeconds,
+//						(forceB1Y / b1.mass) * timeDeltaSeconds
+//					);
+////				b2.vx += (forceB2X / b2.mass) * timeDeltaSeconds;
+////				b2.vy += (forceB2Y / b2.mass) * timeDeltaSeconds;
+//				b2.addSpeed(
+//						(forceB2X / b2.mass) * timeDeltaSeconds,
+//						(forceB2Y / b2.mass) * timeDeltaSeconds
+//					);
+//				
+//				// s = v * t
+////				b1.x += b1.vx * timeDeltaSeconds;
+////				b1.y += b1.vy * timeDeltaSeconds;
+//				b1.addPos(
+//						b1.vx * timeDeltaSeconds,
+//						b1.vy * timeDeltaSeconds
+//					);
+//				
+//				
+////				b2.x += b2.vx * timeDeltaSeconds;
+////				b2.y += b2.vy * timeDeltaSeconds;
+//				b2.addPos(
+//						b2.vx * timeDeltaSeconds,
+//						b2.vy * timeDeltaSeconds
+//					);
+//				iterations++;
+//				if(iterations%1000 == 0)
+//					System.out.println(distance);
+				//System.out.println(bI + ", " + b2I);
 			}
 		}
+		
+		for(Body b : bodies)
+			b.applyForces(timeDeltaSeconds, true);
 		
 		//bodies.get(0).y += 0.1E9;
 		

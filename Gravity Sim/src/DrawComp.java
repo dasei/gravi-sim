@@ -5,7 +5,7 @@ import javax.swing.JComponent;
 
 public class DrawComp extends JComponent{
 	
-	private double pxInMeters = 1E9;
+	private double pxInMeters = 100000;//1E9;
 	
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -13,9 +13,9 @@ public class DrawComp extends JComponent{
 		int cameraOffsetX = this.getWidth()/2;
 		int cameraOffsetY = this.getHeight()/2;
 		
-		Body[] bodies = Main.bodies.toArray(new Body[0]);
+		//Body[] bodies = Main.bodies.toArray(new Body[0]);
 		
-		for(Body b : bodies) {			
+		for(Body b : Main.bodies) {			
 			g2.drawOval(cameraOffsetX + (int)(b.x/pxInMeters) - 5, cameraOffsetY + (int)(b.y/pxInMeters) - 5, 10, 10);			
 		}
 		
