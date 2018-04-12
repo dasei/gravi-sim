@@ -20,28 +20,52 @@ public class Body {
 		this.vy = vy;
 		
 		this.posFixed = posFixed;
+	}	
+	
+	private double forceCacheX = 0;
+	private double forceCacheY = 0;
+	public void addForce(double x, double y){
+		if(this.posFixed)
+			return;
+		forceCacheX += x;
+		forceCacheY += y;
 	}
 	
-	public void addPos(double dx, double dy) {
+	public void applyForces(double timeInterval, boolean clearForcesOnEnd){
 		if(this.posFixed)
-			return;			
-		this.x += dx;
-		this.y += dy;		
+			return;
+		
+		// F = m * a
+		// F / m = a
+		
+		// v = a * t
+		
+		// => v = (F / m) * t  
+		
+		this.vx += (this.forceCacheX / this.mass) * timeInterval;
+		this.vy += (this.forceCacheY / this.mass) * timeInterval;
+		
+		this.x += this.vx * timeInterval;
+		this.y += this.vy * timeInterval;
+		
+		if(clearForcesOnEnd){
+			forceCacheX = 0;
+			forceCacheY = 0;
+		}
+			
 	}
 	
-	public void addSpeed(double dvx, double dvy) {
-		if(this.posFixed)
-			return;			
-		this.vx += dvx;
-		this.vy += dvy;
+	public void resetForceCache(){
+		this.forceCacheX = 0;
+		this.forceCacheY = 0;
 	}
 	
 	public String toString() {
 		return
-				"Body: mass: " + this.mass 
-				+ ", x: " + this.x 
-				+ ", y: " + this.y 
-				+ ", speedX: " + this.vx
-				+ ", speedY: " + this.vy;
+			"Body: mass: " + this.mass 
+			+ ", x: " + this.x 
+			+ ", y: " + this.y 
+			+ ", speedX: " + this.vx
+			+ ", speedY: " + this.vy;
 	}
 }
