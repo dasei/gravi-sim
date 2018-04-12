@@ -1,4 +1,8 @@
+package main;
 import java.util.ArrayList;
+
+import physics.Body;
+import window.Window;
 
 public class Main {
 	
@@ -7,26 +11,25 @@ public class Main {
 	private static Window window;
 	
 	public static void main(String[] args){
-		bodies = new ArrayList<Body>();
-		
-		window = new Window();
-		window.startRepaintThread();
-		
-		Scenarios.loadSolarsystem();
-//		bodies.add(new Body(5.9E24, 0, 150E9, -30000, 0, false));
-
-		try{
-			Thread.sleep(2000);
-		}catch(Exception e){}
-
-		
-		while(true){
-			calcIteration(1);
-			
-//			try{
-//				Thread.sleep(1);
-//			}catch(Exception e){}
-		}
+//		bodies = new ArrayList<Body>();
+//		
+//		window = new Window();		
+//		
+//		Scenarios.loadSolarsystem();
+////		bodies.add(new Body(5.9E24, 0, 150E9, -30000, 0, false));
+//
+//		try{
+//			Thread.sleep(2000);
+//		}catch(Exception e){}
+//
+//		
+//		while(true){
+//			calcIteration(1);
+//			
+////			try{
+////				Thread.sleep(1);
+////			}catch(Exception e){}
+//		}
 	}
 	
 	public static void calcIteration(double timeDeltaSeconds){

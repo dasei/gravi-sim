@@ -1,4 +1,7 @@
+package physics;
 import java.util.ArrayList;
+
+import main.Main;
 
 public class Scenarios {
 	public static void loadSolarsystem() {

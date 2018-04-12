@@ -1,7 +1,12 @@
+package window;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.JComponent;
+
+import main.Main;
+import physics.Body;
+
 
 public class DrawComp extends JComponent{
 	

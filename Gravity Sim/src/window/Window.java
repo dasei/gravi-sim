@@ -1,3 +1,4 @@
+package window;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
@@ -5,6 +6,7 @@ import javax.swing.JFrame;
 public class Window extends JFrame{
 	
 	private DrawComp dc;
+	
 	
 	public Window() {
 		
@@ -19,13 +21,15 @@ public class Window extends JFrame{
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		
+		startRepaintThread();
 	}
 	
 //	public void repaint() {
 //		dc.repaint();
 //	}
 	
-	public void startRepaintThread() {
+	private void startRepaintThread() {
 		(new Thread() {
 			public void run() {
 				while(true) {
