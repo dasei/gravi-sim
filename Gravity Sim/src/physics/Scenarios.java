@@ -10,8 +10,8 @@ public class Scenarios {
 	public static ArrayList<Body> loadSolarsystem() {
 		ArrayList<Body> bodies = new ArrayList<Body>();
 		
-		bodies.add(new Body(5.9E24, 0, -150E9, 30000, 0, false));
 		bodies.add(new Body(1.9E30, 0, 0, 0, 0, true));
+		bodies.add(new Body(5.9E24, 0, -150E9, 29000, 0, false));		
 		
 		return bodies;
 	}
@@ -19,8 +19,8 @@ public class Scenarios {
 	public static ArrayList<Body> loadMeteorite() {
 		ArrayList<Body> bodies = new ArrayList<Body>();
 		
-		bodies.add(new Body(5.9E24, 0, -150E9, 20000, 0, false));
 		bodies.add(new Body(1.9E30, 0, 0, 0, 0, true));
+		bodies.add(new Body(5.9E24, 0, -150E9, 20000, 10000, false));
 		
 		return bodies;
 	}
@@ -28,9 +28,21 @@ public class Scenarios {
 	public static ArrayList<Body> loadSolarsystemDoubled() {
 		ArrayList<Body> bodies = new ArrayList<Body>();
 		
-		bodies.add(new Body(massEarth, 0, -150E9, 30000, 0, false));
 		bodies.add(new Body(massSun, 0, 0, 0, 0, true));
+		
+		bodies.add(new Body(massEarth, 0, -150E9, 30000, 0, false));
 		bodies.add(new Body(massEarth, 0, 150E9, -30000, 0, false));
+		
+		return bodies;
+	}
+	
+	public static ArrayList<Body> loadMeteoriteDoubled() {
+		ArrayList<Body> bodies = new ArrayList<Body>();
+		
+		bodies.add(new Body(1.9E30, 0, 0, 0, 0, true));
+		
+		bodies.add(new Body(5.9E24, 0, -150E9, 20000, 10000, false));
+		bodies.add(new Body(5.9E24, 0, 150E9, 20000, -9500, false));
 		
 		return bodies;
 	}
@@ -41,9 +53,9 @@ public class Scenarios {
 //		bodies.add(new Body(massSun, 0, 0, 0, 0, true));
 		
 		
+		bodies.add(new Body(massEarth, 0, 0, 0, 1000, false));
 		
 		bodies.add(new Body(massEarth, 10000000, 10000000, 0, -5000, false));
-		bodies.add(new Body(massEarth, 0, 0, 0, 1000, false));
 		bodies.add(new Body(massEarth, -10000000, -10000000, 0, 5000, false));
 		//bodies.add(new Body(massEarth, -10000000, -10000000, 0, 5000, false));
 		

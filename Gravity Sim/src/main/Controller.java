@@ -3,6 +3,9 @@ package main;
 import java.util.ArrayList;
 
 import physics.Body;
+import physics.Physics;
+import physics.Physics.AnalazysResult;
+import physics.Scenarios;
 import window.Window;
 
 public class Controller {
@@ -11,17 +14,28 @@ public class Controller {
 	private ArrayList<Body> bodies;
 	
 	private double timeMdklSIterationSeconds = 1;
+	private long timeLoopSleepMS = 0;
+	
+	private SimulationState state = SimulationState.SIMULATING;
+	
+	//Ellipse zeichnen
+	private AnalazysResult analazysResult;
 	
 	public Controller() {
 		
+		bodies = Scenarios.loadMeteoriteDoubled();
+		
 		window = new Window();
 	
-		startLoop(1);
+//		for(int i = 0; i < 2000000; i++) {
+//			Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
+//		}
+//		System.out.println("woop");
 		
+		startLoop();	
 	}
 	
-	
-	private void startLoop(long iterationDelay) {
+	private void startLoop() {
 		Runnable loop = new Runnable() {
 			public void run() {
 				
@@ -30,15 +44,23 @@ public class Controller {
 				while(true) {
 					
 					//do physics
-//					physicsIteration(timeMdklSIterationSeconds);					
-					
+					if(bodies != null) {
+						if(state == SimulationState.SIMULATING)
+							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
+						else if(state == SimulationState.ANALIZING) {//							
+							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
+							state = SimulationState.SIMULATING;
+							getWindow().onAnalyzationFinish();
+						}
+					}
 					
 					//sleep
-					if(iterationDelay > 0)
+					if(timeLoopSleepMS > 0)
 						try {
-							Thread.sleep(iterationDelay);
+							Thread.sleep(timeLoopSleepMS);
 						}catch(Exception e) {							
 						}
+						
 				}
 					
 				// --
@@ -47,72 +69,61 @@ public class Controller {
 		
 		new Thread(loop).start();
 	}
+
+//--------------------------------------------------------------------------------------------------
+	//Logic
 	
-//	private void physicsIteration(double timeDeltaSeconds) {
-//		
-//		double pi = Math.PI;
-//		
-//		Body b1, b2;
-//		for(int bI = 0; bI < bodies.size(); bI++) {
-//			for(int b2I = bI + 1; b2I < bodies.size(); b2I++) {
-//				b1 = bodies.get(bI);
-//				b2 = bodies.get(b2I);			
-//				
-//				//calc distance and directional force
-//				double distance = Functions.calcDistance(b1, b2);				
-//				double force = Functions.calcGravityForce(b1.mass, b2.mass, distance);
-//				
-//				//atan2 Ursprung = oben, Richtung: uhrzeigersinn
-//				//ABER: das koordi system ist ja hier nach unten gerichtet 
-//				// => Ursprung unten, rechts = +90, links = -90
-//				double degrB1 = Functions.getDegree(b1, b2);
-//				
-//				
-////				//sin(degrB1) = forceX / force
-////				//cos(degrB1) = forceY / force
-//
-////				// für b1:
-////				// => sin(degrB1) * force = forceX
-//				double forceB1X = Math.sin(degrB1) * force;
-//				// => cos(degrB1) * force = forceY
-//				double forceB1Y = Math.cos(degrB1) * force;
-//				
-//				
-//				// für b2: (entgegengesetzte Richtung)
-//				double forceB2X = -forceB1X;
-//				double forceB2Y = -forceB1Y;
-//				
-//
-//				// F / m = a
-//				// v = a * t
-//				b1.addSpeed(
-//						(forceB1X / b1.mass) * timeDeltaSeconds,
-//						(forceB1Y / b1.mass) * timeDeltaSeconds
-//					);
-//				b2.addSpeed(
-//						(forceB2X / b2.mass) * timeDeltaSeconds,
-//						(forceB2Y / b2.mass) * timeDeltaSeconds
-//					);
-//				
-//				// s = v * t
-//				b1.addPos(
-//						b1.vx * timeDeltaSeconds,
-//						b1.vy * timeDeltaSeconds
-//					);
-//				
-//				
-//				b2.addPos(
-//						b2.vx * timeDeltaSeconds,
-//						b2.vy * timeDeltaSeconds
-//					);
-//			}
-//		}		
-//	}
+	public boolean pauseOrResume() {
+		if(this.getSimulationState() == SimulationState.PAUSED)
+			this.setSimulationState(SimulationState.SIMULATING);
+		else if(this.getSimulationState() == SimulationState.SIMULATING)
+			this.setSimulationState(SimulationState.PAUSED);
+		else
+			return false;
+		return true;
+	}
+	
+	/**
+	 * @returns if pause was successfull
+	 */
+	public boolean pause() {
+		this.setSimulationState(SimulationState.PAUSED);
+		return true;
+	}
+	
+	public boolean startAnalyzation() {
+		
+		if(!pause())
+			return false;
+		
+		this.setSimulationState(SimulationState.ANALIZING);
+		
+		return true;
+	}
+	
+//--------------------------------------------------------------------------------------------------
+	//SETTERS
+	
+	private void setSimulationState(SimulationState state) {
+		this.state = state;		
+	}
 	
 //--------------------------------------------------------------------------------------------------
 	//GETTERS
 	
 	public Window getWindow() {
 		return this.window;
+	}
+	
+	public ArrayList<Body> getBodies(){
+		return this.bodies;
+	}
+	
+	public SimulationState getSimulationState() {
+		return this.state;
+	}
+	
+	public AnalazysResult getAnalazysResult() {
+		return this.analazysResult;
 	}
 }
