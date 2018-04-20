@@ -76,153 +76,70 @@ public class DrawComp extends JComponent{
 		g2.fillRect((int)(cameraOffsetX+xB2     -xB2)-2,(int)(cameraOffsetY-yB2     +yB2)-2,5,5);
 		
 
-		test(g2, aPix, bPix, degreeRadians, bodyCenter, -xB2, yB2);
+		drawEllipse(g2, aPix, bPix, degreeRadians, bodyCenter, -xB2, yB2);
 //		test(g2, aPix, bPix, degreeRadians, bodyCenter, -0,0);
 	}
 	
-	private void drawEllipse(Graphics2D g2, int aPix, int bPix, double degreeRadians) {
+	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double offsetX, double offsetY) {
 		
-		System.out.println("DrawComp.drawEllipse() <-- called");	
-		System.out.println("data: aPix:" + aPix + ", bPix:" + bPix + ", degree:" + degreeRadians);
-		double x = 0.0D;
+//		double degrees = Math.toDegrees(degreeRadians);
+		
+		
+	 	double x = 0.0D;
+	    double mitteFensterHorizontal = cameraOffsetX + bodyCenter.x;
+	    double mitteFensterVertikal = cameraOffsetY + bodyCenter.y;
 
-		double schrittweite = 1;
-			
-		boolean rechts = true;
-		for (int i = 0; i < 500; i++){
-			
-			//System.out.println("5");
-	 
-			if ((x < aPix) && (rechts))
-			{
-				x += schrittweite;
-				if (x > 0.0D)
-				{
-	     
-					double xNeu = Math.cos(degreeRadians) * x;
+	    boolean rechts = true;
+	    double schrittw1 = 1;
+	    
+	    for (int i = 0; i < 1000; i++){
+		
+	    	if ((x < aPix) && rechts){
+	    		x += schrittw1;
+	    		
+	    		if (x > 0.0D){         
+					double xeu = Math.cos(degreeRadians) * x;
 					double yn1 = (bPix / aPix) * Math.sqrt(aPix * aPix - x * x);		         
-					//System.out.println("yn1: "+(b / a * Math.sqrt(a * a - xn * xn)));
+
 					double ynNeu = Math.sin(degreeRadians) * x;		          
 					double z = Math.cos(degreeRadians) * yn1;
 					double u = Math.sin(degreeRadians) * yn1;		          		          
-					g2.drawRect((int)(xNeu - u + cameraOffsetX), (int)(ynNeu + z + cameraOffsetY), 1, 1);
-					g2.drawRect((int)(xNeu + u + cameraOffsetX), (int)(ynNeu - z + cameraOffsetY), 1, 1);
-	      
-				}
-				//rechts = true;
-			}else{
-				rechts = false;
-			}
-			if ((x > -aPix) && (!rechts)){
-				x -= schrittweite;
-				if (x < 0.0D){		          
-					double xNeu = Math.cos(degreeRadians) * x;		          
-					//System.out.println(""+(b / a * Math.sqrt(a * a - xn * xn)));
-					double yn1 = (bPix / aPix) * Math.sqrt(aPix * aPix - x * x);		         		          
-					double ynNeu = Math.sin(degreeRadians) * x;		          
-					double z = Math.cos(degreeRadians) * yn1;
-					double u = Math.sin(degreeRadians) * yn1;
-					g2.drawRect((int)(xNeu - u + cameraOffsetX), (int)(ynNeu + z + cameraOffsetY), 1, 1);
-					g2.drawRect((int)(xNeu + u + cameraOffsetX), (int)(ynNeu - z + cameraOffsetY), 1, 1);
-				}
-				rechts = false;
-			}else{
-				rechts = true;
-			}
-	  			      
-		}
-			
-	}
-	
-	private void drawFocusPoints(Graphics2D g2, int aPix, int bPix, double degreeRadians) {
-		
-		double e = Math.sqrt(1-(bPix*bPix)/(aPix*aPix)); 	//numerische Exzentrizität
-		double c = aPix*e;							//lineare Exzentrizität
-		//System.out.println("e: "+e+"c: "+c);
-		double yB1 = Math.sin(Math.toRadians(-degreeRadians)) * c;
-		double xB1 = Math.cos(Math.toRadians(-degreeRadians)) * c;
-		double yB2 = Math.sin(Math.toRadians(-degreeRadians)) * -c;
-		double xB2 = Math.cos(Math.toRadians(-degreeRadians)) * -c;
-		g2.fillOval((int)(cameraOffsetX+xB1)-5,(int)(cameraOffsetY-yB1)-5,10,10);
-		g2.fillOval((int)(cameraOffsetX+xB2)-5,(int)(cameraOffsetY-yB2)-5,10,10);
-		
-	}
-	
-	private void test(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double offsetX, double offsetY) {
-		
-		double degrees = Math.toDegrees(degreeRadians);
-		double a = aPix, b = bPix;
-		
-		//System.out.println("DrawECalled");
-	 	double xn = 0.0D;
-	    double mitteFensterHorizontal = cameraOffsetX + bodyCenter.x;
-	    double mitteFensterVertikal = cameraOffsetY + bodyCenter.y;
-//	    g.drawLine(0, this.getHeight() / 2, Main.getWindow().getWidth(), Main.getWindow().getHeight() / 2);
-//	    g.drawLine(Main.getWindow().getWidth() / 2-100, 0, Main.getWindow().getWidth() / 2-100, Main.getWindow().getHeight());
-//	    System.out.println(", Width: "+Main.getWindow().getDraw().getWidth()+"Height: "+Main.getWindow().getDraw().getHeight());
-	    
-	    boolean rechts = true;
-	    
-	    
-	    double schrittw1 = 1;
-	    
-//		if(shouldworkE&&!running)
-//	    	{
-//			MathemSammlung.shouldworkE = false;
-//			running=true;
-			for (int i = 0; i < 1000; i++)
-			{
-				
-				//System.out.println("5");
-     
-		      if ((xn < a) && (rechts))
-		      {
-		        xn += schrittw1;
-		        if (xn > 0.0D)
-		        {
-		         
-		          double xNeu = Math.cos(Math.toRadians(degrees)) * xn;
-		          double yn1 = (b / a) * Math.sqrt(a * a - xn * xn);		         
-		          //System.out.println("yn1: "+(b / a * Math.sqrt(a * a - xn * xn)));
-		          double ynNeu = Math.sin(Math.toRadians(degrees)) * xn;		          
-		          double z = Math.cos(Math.toRadians(degrees)) * yn1;
-		          double u = Math.sin(Math.toRadians(degrees)) * yn1;		          		          
-		          g2.drawOval((int)(xNeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
-		          g2.drawOval((int)(xNeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
-		          
-		        }
-		        rechts = true;
-		      }
-		      else
-		      {
-		        rechts = false;
-		      }
-		      if ((xn > -a) && (!rechts))
-		      {
-		        xn -= schrittw1;
-		        if (xn < 0.0D)
-		        {		          
-		          double xNeu = Math.cos(Math.toRadians(degrees)) * xn;		          
-		          //System.out.println(""+(b / a * Math.sqrt(a * a - xn * xn)));
-		          double yn1 = (b / a) * Math.sqrt(a * a - xn * xn);		         		          
-		          double ynNeu = Math.sin(Math.toRadians(degrees)) * xn;		          
-		          double z = Math.cos(Math.toRadians(degrees)) * yn1;
-		          double u = Math.sin(Math.toRadians(degrees)) * yn1;
-		          g2.drawOval((int)(xNeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
-		          g2.drawOval((int)(xNeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
-		        }
-		        rechts = false;
-		      }
-		      else
-		      {
-		        rechts = true;
-		      }
-		      			      
-		    }
-//		    running=false;
-//		    }
-//			
-//			System.out.println("FinishedE");
+					g2.drawOval((int)(xeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
+					g2.drawOval((int)(xeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
+      
+	    		}
+	    		
+	    		if(rechts != true)
+	    			System.out.println("rechts = true");
+//	    		rechts = true;
+	    	}
+	    	else
+	    	{
+	    		rechts = false;
+	    	}
+	    	if ((x > -aPix) && !rechts)
+	    	{
+	    		x -= schrittw1;
+	    		if (x < 0.0D)
+	    		{		          
+	    			double xeu = Math.cos(degreeRadians) * x;		          
+  //	System.out.println(""+(b / a * Math.sqrt(a * a - x * x)));
+	    			double yn1 = (bPix / aPix) * Math.sqrt(aPix * aPix - x * x);		         		          
+	    			double ynNeu = Math.sin(degreeRadians) * x;		          
+	    			double z = Math.cos(degreeRadians) * yn1;
+	    			double u = Math.sin(degreeRadians) * yn1;
+	    			g2.drawOval((int)(xeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
+	    			g2.drawOval((int)(xeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
+	    		}
+	    		if(rechts != false)
+	    			System.out.println("rechts = false");
+//	    		rechts = false;
+	    	}	
+	    	else
+	    	{
+	    		rechts = true;
+	    	}
+	    }
 	}
 	
 	public void testBrennpunkte(Graphics2D g2, double aPix, double bPix, double degreeRadians, double eLinPix)

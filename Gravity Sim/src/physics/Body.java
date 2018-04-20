@@ -11,7 +11,9 @@ public class Body {
 	
 	public final boolean posFixed;
 	
-	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
+	private String name;
+	
+	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed, String name){
 		
 		this.mass = mass;
 		this.x = x;
@@ -20,7 +22,9 @@ public class Body {
 		this.vy = vy;
 		
 		this.posFixed = posFixed;
-	}	
+		
+		this.name = name;
+	}
 	
 	private double forceCacheX = 0;
 	private double forceCacheY = 0;
@@ -67,5 +71,9 @@ public class Body {
 			+ ", y: " + this.y 
 			+ ", speedX: " + this.vx
 			+ ", speedY: " + this.vy;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 }

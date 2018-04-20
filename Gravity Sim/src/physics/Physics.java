@@ -48,10 +48,11 @@ public class Physics {
 	public static AnalazysResult runAnalizis(ArrayList<Body> bodies, Body centerBody, Body target, double timeMdklSDeltaSeconds) {
 		
 		//variables for storing max and min values
-		double minDistance = Double.MAX_VALUE, minDistanceDegree = -1;
-		double maxDistance = Double.MIN_VALUE, maxDistanceDegree = -1;
+		double minDistance = Double.MAX_VALUE, minDistanceDegree = 0;
+		double maxDistance = Double.MIN_VALUE, maxDistanceDegree = 0;
 
 		boolean rotationDirection = getRotationDirection(centerBody, target);
+//		System.out.println(rotationDirection);
 		//System.out.println("Rotation: " + (rotationDirection ? "left" : "right"));
 		
 		double degreeStart = Functions.getDegree(centerBody, target);
@@ -123,14 +124,9 @@ public class Physics {
 			if(dist < minDistance) {
 				minDistance = dist;
 				minDistanceDegree = degree;
+//				System.out.println("minDist
 			}
 			
-			//check if half rotation has been reached
-			if(hasCompletedHalfRotation == false) {
-				
-				//rotating left
-				
-			}
 			
 			//check if overflow has been reached
 			if(hasReachedAngleOverflow == false) {
@@ -231,7 +227,7 @@ public class Physics {
 	 * @returns true for left, false for rightwards
 	 */	
 	private static boolean getRotationDirection(Body bodyCenter, Body target) {
-		
+		//TODO die auch für Ellipsen zum funktionieren bringen
 		
 		if(target.vx > bodyCenter.vx) {
 			//target bewegt sich nach rechts

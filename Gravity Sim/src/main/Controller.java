@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import physics.Body;
 import physics.Physics;
 import physics.Physics.AnalazysResult;
-import physics.Scenarios;
+import physics.Templates;
 import window.Window;
 
 public class Controller {
@@ -23,7 +23,7 @@ public class Controller {
 	
 	public Controller() {
 		
-		bodies = Scenarios.loadMeteoriteDoubled();
+		bodies = Templates.loadSolarsystem();
 		
 		window = new Window();
 	
@@ -42,6 +42,8 @@ public class Controller {
 				// --
 				
 				while(true) {
+					
+					
 					
 					//do physics
 					if(bodies != null) {
