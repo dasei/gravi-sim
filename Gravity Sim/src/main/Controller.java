@@ -50,7 +50,7 @@ public class Controller {
 						if(state == SimulationState.SIMULATING)
 							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 						else if(state == SimulationState.ANALIZING) {//							
-							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*1);
+							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
 							state = SimulationState.SIMULATING;
 							getWindow().onAnalyzationFinish();
 						}

@@ -101,61 +101,101 @@ public class DrawComp extends JComponent{
 //		double degrees = Math.toDegrees(degreeRadians);
 		
 		
-	 	double x = 0.0D;
-	    double mitteFensterHorizontal = cameraOffsetXPix + bodyCenter.x;
-	    double mitteFensterVertikal = cameraOffsetYPix + bodyCenter.y;
+	 	double x = -aPix;
+	    double mitteFensterHorizontal = cameraOffsetXPix + bodyCenter.x+offsetX;
+	    double mitteFensterVertikal = cameraOffsetYPix + bodyCenter.y+offsetY;
 
 	    boolean rechts = true;
 	    double schrittw1 = 1;
+	    int wdh = (int)(4*aPix); 
+	    int[] startPoint = new int[2];
+	    int[] cachePoint = new int[2];
 	    
-	    for (int i = 0; i < 1000; i++){
+	    
+	    
+	    for (int i = 0; i < wdh; i++){
 		
-	    	if ((x < aPix) && rechts){
-	    		x += schrittw1;
+	    	if(rechts)
+	    	{
+	    		if ((x < aPix)){
 	    		
-	    		if (x > 0.0D){         
-					double xeu = Math.cos(degreeRadians) * x;
-					double yn1 = (bPix / aPix) * Math.sqrt(aPix * aPix - x * x);		         
+	    		
+	    		       
+	    			double xNeu = Math.cos(degreeRadians) * x;
+	    			double yn1 = (bPix / aPix) * Math.sqrt(aPix * aPix - x * x);		         
 
-					double ynNeu = Math.sin(degreeRadians) * x;		          
+	    			double ynNeu = Math.sin(degreeRadians) * x;		          
 					double z = Math.cos(degreeRadians) * yn1;
 					double u = Math.sin(degreeRadians) * yn1;		          		          
-					g2.drawOval((int)(xeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
-					g2.drawOval((int)(xeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
-      
-	    		}
+//					g2.drawOval((int)(xeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
+//					g2.drawOval((int)(xeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
+					if(cachePoint[0]==0&&cachePoint[1]==0)
+					{
+						startPoint[0] = (int)(xNeu + u + mitteFensterHorizontal);
+						startPoint[1] = (int)(ynNeu - z + mitteFensterVertikal);
+						
+						cachePoint[0] = startPoint[0];
+	    				cachePoint[1] = startPoint[1];
+					}
+					else
+					{
+						g2.drawLine(cachePoint[0], cachePoint[1], (int)(xNeu + u + mitteFensterHorizontal), (int)(ynNeu - z + mitteFensterVertikal));		        	  
+						cachePoint[0] = (int)(xNeu + u + mitteFensterHorizontal);
+						cachePoint[1] = (int)(ynNeu - z + mitteFensterVertikal);
+					}
+					
+					
 	    		
-	    		if(rechts != true)
-	    			System.out.println("rechts = true");
-//	    		rechts = true;
+					x += schrittw1;
+	    		
+
+	    		}
+	    		else
+	    		{
+	    			rechts = false;	 
+	    			x -= 1;
+	    		}
 	    	}
-	    	else
+	    	if(!rechts)
 	    	{
-	    		rechts = false;
-	    	}
-	    	if ((x > -aPix) && !rechts)
-	    	{
-	    		x -= schrittw1;
-	    		if (x < 0.0D)
-	    		{		          
-	    			double xeu = Math.cos(degreeRadians) * x;		          
+	    		if ((x > -aPix) && !rechts)
+	    		{
+	    		
+	    				          
+	    			double xNeu = Math.cos(degreeRadians) * x;		          
   //	System.out.println(""+(b / a * Math.sqrt(a * a - x * x)));
 	    			double yn1 = (bPix / aPix) * Math.sqrt(aPix * aPix - x * x);		         		          
 	    			double ynNeu = Math.sin(degreeRadians) * x;		          
 	    			double z = Math.cos(degreeRadians) * yn1;
 	    			double u = Math.sin(degreeRadians) * yn1;
-	    			g2.drawOval((int)(xeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
-	    			g2.drawOval((int)(xeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
+//	    			g2.drawOval((int)(xeu - u + mitteFensterHorizontal + offsetX), (int)(ynNeu + z + mitteFensterVertikal + offsetY), 1, 1);
+//	    			g2.drawOval((int)(xeu + u + mitteFensterHorizontal + offsetX), (int)(ynNeu - z + mitteFensterVertikal + offsetY), 1, 1);
+	    			if(cachePoint[0]==0&&cachePoint[1]==0)
+	    			{
+	    				cachePoint[0] = (int)(xNeu - u + mitteFensterHorizontal);
+	    				cachePoint[1] = (int)(ynNeu + z + mitteFensterVertikal);
+	    			}
+	    			else
+	    			{
+	    				g2.drawLine(cachePoint[0], cachePoint[1], (int)(xNeu - u + mitteFensterHorizontal), (int)(ynNeu + z + mitteFensterVertikal));
+	    				cachePoint[0] = (int)(xNeu - u + mitteFensterHorizontal);
+	    				cachePoint[1] = (int)(ynNeu + z + mitteFensterVertikal);	
+	    			}
+	    			
+	    			
+	    		
+	    		x -= schrittw1;
+	    		
+
+	    		}	
+	    		else
+	    		{
+	    			rechts = true;	 
+	    			x += 1;
 	    		}
-	    		if(rechts != false)
-	    			System.out.println("rechts = false");
-//	    		rechts = false;
-	    	}	
-	    	else
-	    	{
-	    		rechts = true;
 	    	}
 	    }
+	    g2.drawLine(cachePoint[0], cachePoint[1], startPoint[0], startPoint[1]);
 	}
 
 	private void drawInfoTab(Graphics2D g2, Body body) {

@@ -101,9 +101,9 @@ public class Window extends JFrame{
 			public void run() {
 				while(true) {
 					dc.repaint();
-					try {
-						Thread.sleep(33);
-					}catch(Exception exc) {}
+//					try {
+//						Thread.sleep(0);
+//					}catch(Exception exc) {}
 				}
 			}
 		}).start();
