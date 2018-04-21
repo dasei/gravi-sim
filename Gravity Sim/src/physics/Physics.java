@@ -59,6 +59,7 @@ public class Physics {
 		boolean hasReachedAngleOverflowTop = false;
 		boolean hasReachedAngleOverflowBottom = false;
 		boolean reachedAngleOverflowTopFirst;
+		
 		if(rotationDirection == true)
 			if(degreeStart < 0)
 				reachedAngleOverflowTopFirst = false;
@@ -195,7 +196,7 @@ public class Physics {
 	
 	/**
 	 * @returns true for left, false for rightwards
-	 */	
+	 */
 	private static boolean getRotationDirection(ArrayList<Body> bodies, Body bodyCenter, Body target, double timeMdklSDelta) {
 		
 		double degree1 = Functions.getDegree(bodyCenter, target);

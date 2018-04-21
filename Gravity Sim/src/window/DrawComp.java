@@ -89,8 +89,8 @@ public class DrawComp extends JComponent{
 		double xB1 = Math.cos(-degreeRadians) * eLin;
 		double yB2 = Math.sin(-degreeRadians) * -eLin;
 		double xB2 = Math.cos(-degreeRadians) * -eLin;
-		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-2,(int)(cameraOffsetYPix-yB1     +yB2)-2,5,5);
-		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-2,(int)(cameraOffsetYPix-yB2     +yB2)-2,5,5);
+		g2.fillOval((int)(cameraOffsetXPix+xB1     -xB2)-2,(int)(cameraOffsetYPix-yB1     +yB2)-2,5,5);
+		g2.fillOval((int)(cameraOffsetXPix+xB2     -xB2)-2,(int)(cameraOffsetYPix-yB2     +yB2)-2,5,5);
 		
 
 		drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, -xB2, yB2);
@@ -181,7 +181,7 @@ public class DrawComp extends JComponent{
 		//1: modify this.pxInMeters
 		//2: center camera on stored position
 				
-		Point2D.Double point = getPositionOnCoordinateSystem(xPix, yPix);			
+		Point2D.Double point = getPositionOnCoordinateSystem(xPix, yPix);
 		if(in) {
 			this.pxInMeters *= zoomStrength;
 		}else {

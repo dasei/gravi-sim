@@ -99,6 +99,8 @@ public class Window extends JFrame{
 	private void startRepaintThread() {
 		(new Thread() {
 			public void run() {
+				this.setName("repaint Thread");
+				
 				while(true) {
 					dc.repaint();
 					try {
