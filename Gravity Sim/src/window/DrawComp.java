@@ -111,7 +111,7 @@ public class DrawComp extends JComponent{
 	    int[] startPoint = new int[2];
 	    int[] cachePoint = new int[2];
 	    
-	    
+	     
 	    
 	    for (int i = 0; i < wdh; i++){
 		
