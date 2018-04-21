@@ -26,13 +26,13 @@ public class Controller {
 		bodies = Templates.loadSolarsystem();
 		
 		window = new Window();
-	
+//		window.getDrawComp().setShouldRepaint(true);
 //		for(int i = 0; i < 2000000; i++) {
 //			Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 //		}
 //		System.out.println("woop");
 		
-		startLoop();	
+		startLoop();
 	}
 	
 	private void startLoop() {
@@ -50,7 +50,7 @@ public class Controller {
 						if(state == SimulationState.SIMULATING)
 							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 						else if(state == SimulationState.ANALIZING) {//							
-							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
+							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*1);
 							state = SimulationState.SIMULATING;
 							getWindow().onAnalyzationFinish();
 						}

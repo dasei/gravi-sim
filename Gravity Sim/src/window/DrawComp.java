@@ -1,6 +1,7 @@
 package window;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -19,65 +20,80 @@ public class DrawComp extends JComponent{
 	
 	private boolean shouldRepaint = true;
 	
-	private int cameraOffsetX;
-	private int cameraOffsetY;
+	private int cameraOffsetXPix;
+	private double cameraOffsetXMeters;
+	private int cameraOffsetYPix;
+	private double cameraOffsetYMeters;
+	
+	private int lastWidth;
+	private int lastHeight;
+	
+//	private long lastEllipseRepaintID = -1;
+	
+	private Controller controller;
+	
+	public DrawComp() {
+//		this.addComponentListener(new ComponentListener() {
+//			public void componentHidden(ComponentEvent e) {}
+//			public void componentMoved(ComponentEvent e) {}
+//			public void componentResized(ComponentEvent e) {
+//				
+//			}
+//			public void componentShown(ComponentEvent e) {}
+//		});
+	}
 	
 	public void paintComponent(Graphics g) {
 		if(!shouldRepaint)
 			return;
 		Graphics2D g2 = (Graphics2D) g;
 		
-		cameraOffsetX = this.getWidth()/2;
-		cameraOffsetY = this.getHeight()/2;
-		
-		Controller controller = Main.getController();
-		if(controller == null)
-			return;
+		if(controller == null) {
+			controller = Main.getController();
+			if(controller == null)
+				return;
+		}
 		ArrayList<Body> bodies = controller.getBodies();
 		
+		
+		//modify offset if drawcomp was resized
+		if(this.getWidth() != this.lastWidth || this.getHeight() != this.lastHeight) {
+			this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
+		}
+		
 		if(bodies != null)
-			for(Body b : bodies) 
-				g2.drawOval(cameraOffsetX + (int)(b.x/pxInMeters) - 5, cameraOffsetY + (int)(b.y/pxInMeters) - 5, 10, 10);
+			for(Body b : bodies) { 
+				g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - 5, cameraOffsetYPix + (int)(b.y/pxInMeters) - 5, 10, 10);
+				drawInfoTab(g2, b);
+			}
 		
 		drawEllipseWithFocusPoints(g2);
+		
+		lastWidth = this.getWidth();
+		lastHeight = this.getHeight();
 	}
 	
 	private void drawEllipseWithFocusPoints(Graphics2D g2) {
+//		System.out.println("repainting ellipse");		
 		
 		AnalazysResult analazysResult = Main.getController().getAnalazysResult();
 		
 		if(analazysResult == null)
 			return;
 		
-		double aPix = analazysResult.a / pxInMeters;
-		double bPix = analazysResult.b / pxInMeters;
 		double degreeRadians = -analazysResult.maxDistanceDegree + (Math.PI/2);
 		double eLin = analazysResult.eLin / pxInMeters;
-		Body bodyCenter = analazysResult.bodyCenter;
-		
-//		drawEllipse(g2, aPix, bPix, degreeRadians);
-		//drawFocusPoints(g2, aPix, bPix, degreeRadians);
-//		testBrennpunkte(g2, aPix, bPix, degreeRadians, eLin);
-		
-//		System.out.println("eLin archived: " + eLin);
-		
-		
-//		double e = Math.sqrt(1-(bPix*bPix)/(aPix*aPix)); 	//numerische Exzentrizität
-//		eLin = aPix*e;							//lineare Exzentrizität
-		
-		//eLin = Math.sqrt((aPix*aPix) - (bPix*bPix));
 		
 		//zeichnen der Brennpunkte
 		double yB1 = Math.sin(-degreeRadians) * eLin;
 		double xB1 = Math.cos(-degreeRadians) * eLin;
 		double yB2 = Math.sin(-degreeRadians) * -eLin;
 		double xB2 = Math.cos(-degreeRadians) * -eLin;
-		g2.fillRect((int)(cameraOffsetX+xB1     -xB2)-2,(int)(cameraOffsetY-yB1     +yB2)-2,5,5);
-		g2.fillRect((int)(cameraOffsetX+xB2     -xB2)-2,(int)(cameraOffsetY-yB2     +yB2)-2,5,5);
+		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-2,(int)(cameraOffsetYPix-yB1     +yB2)-2,5,5);
+		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-2,(int)(cameraOffsetYPix-yB2     +yB2)-2,5,5);
 		
 
-		drawEllipse(g2, aPix, bPix, degreeRadians, bodyCenter, -xB2, yB2);
-//		test(g2, aPix, bPix, degreeRadians, bodyCenter, -0,0);
+		drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, -xB2, yB2);
 	}
 	
 	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double offsetX, double offsetY) {
@@ -86,8 +102,8 @@ public class DrawComp extends JComponent{
 		
 		
 	 	double x = 0.0D;
-	    double mitteFensterHorizontal = cameraOffsetX + bodyCenter.x;
-	    double mitteFensterVertikal = cameraOffsetY + bodyCenter.y;
+	    double mitteFensterHorizontal = cameraOffsetXPix + bodyCenter.x;
+	    double mitteFensterVertikal = cameraOffsetYPix + bodyCenter.y;
 
 	    boolean rechts = true;
 	    double schrittw1 = 1;
@@ -141,51 +157,90 @@ public class DrawComp extends JComponent{
 	    	}
 	    }
 	}
-	
-	public void testBrennpunkte(Graphics2D g2, double aPix, double bPix, double degreeRadians, double eLinPix)
-	{
-//		double a = aPix, b = bPix;
+
+	private void drawInfoTab(Graphics2D g2, Body body) {
 		
-//		degrees = Math.toDegrees(degrees);
 		
-//		double mitteFensterHorizontal = cameraOffsetX;
-//		double mitteFensterVertikal = cameraOffsetY;
-//		double e = Math.sqrt(1-(b*b)/(a*a)); 	//numerische Exzentrizität
-//		double c = a*e;							//lineare Exzentrizität
-//		//System.out.println("e: "+e+"c: "+c);
-//		double yB1 = Math.sin(Math.toRadians(-degrees)) * c;
-//		double xB1 = Math.cos(Math.toRadians(-degrees)) * c;
-//		double yB2 = Math.sin(Math.toRadians(-degrees)) * -c;
-//		double xB2 = Math.cos(Math.toRadians(-degrees)) * -c;
-//		g2.fillOval((int)(mitteFensterHorizontal+xB1)-5,(int)(mitteFensterVertikal-yB1)-5,10,10);
-//		g2.fillOval((int)(mitteFensterHorizontal+xB2)-5,(int)(mitteFensterVertikal-yB2)-5,10,10);
 		
-//		double mitteFensterHorizontal = cameraOffsetX;
-//		double mitteFensterVertikal = cameraOffsetY;
-//		double e = Math.sqrt(1-(bPix*bPix)/(aPix*aPix)); 	//numerische Exzentrizität
-//		double c = aPix*e;							//lineare Exzentrizität
-		
-//		double eLin = Math.sqrt((aPix*aPix) - (bPix*bPix));
-		
-//		//System.out.println("e: "+e+"c: "+c);
-//		double yB1 = Math.sin(-degreeRadians) * c;
-//		double xB1 = Math.cos(-degreeRadians) * c;
-//		double yB2 = Math.sin(-degreeRadians) * -c;
-//		double xB2 = Math.cos(-degreeRadians) * -c;
-//		g2.fillOval((int)(cameraOffsetX+xB1)-5,(int)(cameraOffsetY-yB1)-5,10,10);
-//		g2.fillOval((int)(cameraOffsetX+xB2)-5,(int)(cameraOffsetY-yB2)-5,10,10);
-		double yB1 = Math.sin(-degreeRadians) * eLinPix;
-		double xB1 = Math.cos(-degreeRadians) * eLinPix;
-		double yB2 = Math.sin(-degreeRadians) * -eLinPix;
-		double xB2 = Math.cos(-degreeRadians) * -eLinPix;
-		g2.fillOval((int)(cameraOffsetX+xB1)-5,(int)(cameraOffsetY-yB1)-5,10,10);
-		g2.fillOval((int)(cameraOffsetX+xB2)-5,(int)(cameraOffsetY-yB2)-5,10,10);		
 	}
 	
+//	private final int skalaOffsetX = 
+	private void drawSkala(Graphics2D g2) {
+		
+		double[] zoomLevels = new double[] 
+				{1E8, 1E9, 1E10};
+		
+	}
+	
+//--------------------------------------------------------------------------------------------------
+	//Logic
+	private double zoomStrength = 0.8;
+	public void zoom(boolean in, int xPix, int yPix) {
+		
+		
+		//1: modify this.pxInMeters
+		//2: center camera on stored position
+				
+		Point2D.Double point = getPositionOnCoordinateSystem(xPix, yPix);			
+		if(in) {
+			this.pxInMeters *= zoomStrength;
+		}else {
+			this.pxInMeters /= zoomStrength;
+//			point = getPositionOnCoordinateSystem(this.getWidth() - xPix, this.getHeight() - yPix);
+		}
+		this.positionPointAt(point.getX(), point.getY(), xPix, yPix);
+//		
+//		//this.centerCamera(point.getX(), point.getY());
+//		
+//		this.positionPointAt(-100E9, -100E9, 0, 0);
+	}
+	
+	public void centerCamera() {
+		cameraOffsetXPix = this.getWidth()/2;
+		cameraOffsetYPix = this.getHeight()/2;
+		this.recalcOffsetMeters();
+//		cameraOffsetXMeters = cameraOffsetXPix * pxInMeters;
+//		cameraOffsetYMeters = cameraOffsetYPix * pxInMeters;
+	}
+	
+	public void centerCamera(double xMeters, double yMeters) {
+		this.cameraOffsetXPix = (int) ((this.getWidth() / 2) - (xMeters / this.pxInMeters));
+		this.cameraOffsetYPix = (int) ((this.getHeight() / 2) - (yMeters / this.pxInMeters));
+		
+		this.recalcOffsetMeters();
+//		this.cameraOffsetXMeters = this.cameraOffsetXPix * this.pxInMeters;
+//		this.cameraOffsetYMeters = this.cameraOffsetYPix * this.pxInMeters;
+	}
+	
+	public void positionPointAt(double xMeters, double yMeters, int xPixDestination, int yPixDestination) {
+		this.cameraOffsetXMeters = (xPixDestination * this.pxInMeters) - xMeters;
+		this.cameraOffsetYMeters = (yPixDestination * this.pxInMeters) - yMeters;
+		
+//		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
+//		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
+		this.recalcOffsetPix();
+	}
+	
+	public Point2D.Double getPositionOnCoordinateSystem(int xPix, int yPix) {
+		return new Point2D.Double(
+				(xPix-this.cameraOffsetXPix)*this.pxInMeters,
+				(yPix-this.cameraOffsetYPix)*this.pxInMeters
+			);
+	}
+	
+	private void recalcOffsetMeters() {
+		this.cameraOffsetXMeters = this.cameraOffsetXPix * this.pxInMeters;
+		this.cameraOffsetYMeters = this.cameraOffsetYPix * this.pxInMeters;
+	}
+	
+	private void recalcOffsetPix() {
+		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
+		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
+	}
 //--------------------------------------------------------------------------------------------------
 	//SETTERS
 	
 	public void setShouldRepaint(boolean shouldRepaint) {
 		this.shouldRepaint = shouldRepaint;
-	}
+	}	
 }

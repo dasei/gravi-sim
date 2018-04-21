@@ -3,6 +3,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,6 +36,14 @@ public class Window extends JFrame{
 		
 		dc = new DrawComp();
 		dc.setPreferredSize(new Dimension(500,500));
+		dc.addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if(e.getWheelRotation() > 0)
+					dc.zoom(false, e.getX(), e.getY());
+				else if(e.getWheelRotation() < 0)
+					dc.zoom(true, e.getX(), e.getY());
+			}
+		});		
 //		dc.addMouseListener(new MouseListener() {
 //			public void mouseClicked(MouseEvent e) {}
 //			public void mouseEntered(MouseEvent e) {}
@@ -76,7 +86,7 @@ public class Window extends JFrame{
 		
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.setVisible(true);
+		this.setVisible(true);		
 		
 		startRepaintThread();
 	}
