@@ -82,6 +82,8 @@ public class DrawComp extends JComponent{
 		
 		lastWidth = this.getWidth();
 		lastHeight = this.getHeight();
+		
+		System.out.println(this.cameraOffsetXMeters);
 	}
 	
 	private void drawEllipseWithFocusPoints(Graphics2D g2) {
@@ -313,18 +315,24 @@ public class DrawComp extends JComponent{
 	}
 	
 	public void positionPointAt(double xMeters, double yMeters, int xPixDestination, int yPixDestination) {
+//		Point mousePos = this.getMousePosition();
+		
+		
 		this.cameraOffsetXMeters = (xPixDestination * this.pxInMeters) - xMeters;
 		this.cameraOffsetYMeters = (yPixDestination * this.pxInMeters) - yMeters;
 		
 //		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
 //		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
 		this.recalcOffsetPix();
+		
+//		Point mousePos2 = this.getMousePosition();
+//		System.out.println(getPositionOnCoordinateSystem(mousePos.x, mousePos.y) + " " + getPositionOnCoordinateSystem(mousePos2.x, mousePos2.y));
 	}
 	
 	public Point2D.Double getPositionOnCoordinateSystem(int xPix, int yPix) {
 		return new Point2D.Double(
-				(xPix-this.cameraOffsetXPix)*this.pxInMeters,
-				(yPix-this.cameraOffsetYPix)*this.pxInMeters
+				(double) (xPix - this.cameraOffsetXPix) * this.pxInMeters,
+				(double) (yPix - this.cameraOffsetYPix) * this.pxInMeters
 			);
 	}
 	
@@ -354,6 +362,8 @@ public class DrawComp extends JComponent{
 			this.pxInMeters = 1;
 		
 		this.positionPointAt(point.getX(), point.getY(), xPix, yPix);
+		
+		System.out.println(this.pxInMeters);
 		
 		this.recalcScale((Graphics2D) this.getGraphics());
 	}
