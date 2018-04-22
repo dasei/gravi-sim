@@ -9,11 +9,25 @@ public class Body {
 	public double vx;
 	public double vy;
 	
+	public double volume;
+	public double radiusMeters;
+	
 	public final boolean posFixed;
 	
 	private String name;
 	
-	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed, String name){
+	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
+		
+		this.mass = mass;
+		this.x = x;
+		this.y = y;
+		this.vx = vx;
+		this.vy = vy;
+		
+		this.posFixed = posFixed;
+	}
+	
+	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed, String name, double density){
 		
 		this.mass = mass;
 		this.x = x;
@@ -24,6 +38,11 @@ public class Body {
 		this.posFixed = posFixed;
 		
 		this.name = name;
+		
+		// p = m / V
+		this.volume = this.mass / density;
+		// V = 4/3 * r³ * pi
+		this.radiusMeters = Math.cbrt(this.volume/((4D/3D) * Math.PI));
 	}
 	
 	private double forceCacheX = 0;
