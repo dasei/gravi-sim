@@ -1,6 +1,8 @@
 package window;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -61,6 +63,8 @@ public class DrawComp extends JComponent{
 			this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
 		}
 		
+		this.applyMouseDrag();
+		
 		int radiusPix;
 		if(bodies != null)
 			for(Body b : bodies) {
@@ -86,26 +90,39 @@ public class DrawComp extends JComponent{
 		double degreeRadians = -analazysResult.maxDistanceDegree + (Math.PI/2);
 		double eLin = analazysResult.eLin / pxInMeters;
 		
+		
 		//zeichnen der Brennpunkte
 		double yB1 = Math.sin(-degreeRadians) * eLin;
 		double xB1 = Math.cos(-degreeRadians) * eLin;
 		double yB2 = Math.sin(-degreeRadians) * -eLin;
 		double xB2 = Math.cos(-degreeRadians) * -eLin;
-		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-1,(int)(cameraOffsetYPix-yB1     +yB2)-1,3,3);
-		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-1,(int)(cameraOffsetYPix-yB2     +yB2)-1,3,3);
+		
+		double centerX = cameraOffsetXPix - xB2;		
+		double centerY = cameraOffsetYPix + yB2;
+		
+//		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-1,(int)(cameraOffsetYPix-yB1     +yB2)-1,3,3);
+//		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-1,(int)(cameraOffsetYPix-yB2     +yB2)-1,3,3);
+
+		g2.fillRect((int) (centerX + xB1) - 1, (int) (centerY - yB1) - 1, 3, 3);
+		g2.fillRect((int) (centerX + xB2) - 1, (int) (centerY - yB2) - 1, 3, 3);
+
 		
 
-		drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, -xB2, yB2);
+		drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, centerX, centerY);
 	}
 	
-	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double offsetX, double offsetY) {
+	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double centerX, double centerY) {
 		
 		double schrittweite = 2;
 		int wdh = (int)(4*aPix);
 		
-	    double ellipseCenterX = cameraOffsetXPix + bodyCenter.x + offsetX;
-	    double ellipseCenterY = cameraOffsetYPix + bodyCenter.y + offsetY;
+//		double ellipseCenterX = cameraOffsetXPix + offsetX;
+//		double ellipseCenterY = cameraOffsetYPix + offsetY;
 
+		double ellipseCenterX = centerX;
+		double ellipseCenterY = centerY;
+
+		
 	    int pointStartX = 0, pointStartY = 0;
 	    int pointCacheX = 0, pointCacheY = 0;
 	    
@@ -176,34 +193,26 @@ public class DrawComp extends JComponent{
 	}
 	
 //	private final int skalaOffsetX = 
-	private void drawSkala(Graphics2D g2) {
-		
-		double[] zoomLevels = new double[] 
-				{1E8, 1E9, 1E10};
-		
-	}
+//	private void drawSkala(Graphics2D g2) {
+//		
+//		double[] zoomLevels = new double[] 
+//				{1E8, 1E9, 1E10};
+//		
+//	}
 	
 //--------------------------------------------------------------------------------------------------
 	//Logic
 	private double zoomStrength = 0.8;
 	public void zoom(boolean in, int xPix, int yPix) {
 		
-		
-		//1: modify this.pxInMeters
-		//2: center camera on stored position
-				
 		Point2D.Double point = getPositionOnCoordinateSystem(xPix, yPix);
 		if(in) {
 			this.pxInMeters *= zoomStrength;
 		}else {
 			this.pxInMeters /= zoomStrength;
-//			point = getPositionOnCoordinateSystem(this.getWidth() - xPix, this.getHeight() - yPix);
 		}
-		this.positionPointAt(point.getX(), point.getY(), xPix, yPix);
-//		
-//		//this.centerCamera(point.getX(), point.getY());
-//		
-//		this.positionPointAt(-100E9, -100E9, 0, 0);
+		
+		this.positionPointAt(point.getX(), point.getY(), xPix, yPix);		
 	}
 	
 	public void centerCamera() {
@@ -248,6 +257,32 @@ public class DrawComp extends JComponent{
 		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
 		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
 	}
+	
+//--------------------------------------------------------------------------------------------------
+	//MOVEMENT
+	
+	private volatile boolean currentlyMouseDragging = false;
+	private double mouseDragStartMetersX;
+	private double mouseDragStartMetersY;
+	public void startMouseDrag(MouseEvent e) {
+		Point2D.Double point = this.getPositionOnCoordinateSystem(e.getX(), e.getY());
+		this.mouseDragStartMetersX = point.getX();
+		this.mouseDragStartMetersY = point.getY();
+		this.currentlyMouseDragging = true;
+	}
+	
+	public void stopMouseDrag() {
+		this.currentlyMouseDragging = false;
+	}
+	
+	private void applyMouseDrag() {
+		if(!this.currentlyMouseDragging)
+			return;
+		
+		Point mousePos = this.getMousePosition();
+		this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);
+	}
+	
 //--------------------------------------------------------------------------------------------------
 	//SETTERS
 	

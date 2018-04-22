@@ -3,6 +3,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -44,17 +46,19 @@ public class Window extends JFrame{
 					dc.zoom(true, e.getX(), e.getY());
 			}
 		});		
-//		dc.addMouseListener(new MouseListener() {
-//			public void mouseClicked(MouseEvent e) {}
-//			public void mouseEntered(MouseEvent e) {}
-//			public void mouseExited(MouseEvent e) {}
-//			public void mousePressed(MouseEvent e) {
-//				onMouseClick(e);				
-//			}
-//			public void mouseReleased(MouseEvent e) {
-////				onMouseRelease(e);
-//			}			
-//		});
+		dc.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {
+				if(SwingUtilities.isMiddleMouseButton(e))
+					dc.startMouseDrag(e);
+			}
+			public void mouseReleased(MouseEvent e) {
+				if(SwingUtilities.isMiddleMouseButton(e))
+					dc.stopMouseDrag();
+			}			
+		});
 		this.add(dc);
 		
 		
