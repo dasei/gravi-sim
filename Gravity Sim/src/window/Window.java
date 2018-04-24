@@ -3,6 +3,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,17 +38,27 @@ public class Window extends JFrame{
 		
 		dc = new DrawComp();
 		dc.setPreferredSize(new Dimension(500,500));
-//		dc.addMouseListener(new MouseListener() {
-//			public void mouseClicked(MouseEvent e) {}
-//			public void mouseEntered(MouseEvent e) {}
-//			public void mouseExited(MouseEvent e) {}
-//			public void mousePressed(MouseEvent e) {
-//				onMouseClick(e);				
-//			}
-//			public void mouseReleased(MouseEvent e) {
-////				onMouseRelease(e);
-//			}			
-//		});
+		dc.addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if(e.getWheelRotation() > 0)
+					dc.zoom(false, e.getX(), e.getY());
+				else if(e.getWheelRotation() < 0)
+					dc.zoom(true, e.getX(), e.getY());
+			}
+		});		
+		dc.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {
+				if(SwingUtilities.isMiddleMouseButton(e))
+					dc.startMouseDrag(e);
+			}
+			public void mouseReleased(MouseEvent e) {
+				if(SwingUtilities.isMiddleMouseButton(e))
+					dc.stopMouseDrag();
+			}			
+		});
 		this.add(dc);
 		
 		
@@ -76,7 +90,7 @@ public class Window extends JFrame{
 		
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.setVisible(true);
+		this.setVisible(true);		
 		
 		startRepaintThread();
 	}
@@ -89,11 +103,13 @@ public class Window extends JFrame{
 	private void startRepaintThread() {
 		(new Thread() {
 			public void run() {
+				this.setName("repaint Thread");
+				
 				while(true) {
 					dc.repaint();
-					try {
-						Thread.sleep(33);
-					}catch(Exception exc) {}
+//					try {
+//						Thread.sleep(0);
+//					}catch(Exception exc) {}
 				}
 			}
 		}).start();

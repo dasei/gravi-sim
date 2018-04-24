@@ -3,7 +3,7 @@ package physics;
 public class Functions {
 	
 	public static double calcDistance(Body b0, Body b1){
-		return Math.sqrt(Math.pow(b1.x - b0.x, 2) + Math.pow(b1.y - b0.y, 2));
+		return Math.sqrt(((b1.x - b0.x)*(b1.x - b0.x)) + ((b1.y - b0.y)*(b1.y - b0.y)));
 	}
 	
 	public static double calcGravityForce(double m1, double m2, double distance) {

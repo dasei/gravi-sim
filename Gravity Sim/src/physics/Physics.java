@@ -48,25 +48,28 @@ public class Physics {
 	public static AnalazysResult runAnalizis(ArrayList<Body> bodies, Body centerBody, Body target, double timeMdklSDeltaSeconds) {
 		
 		//variables for storing max and min values
-		double minDistance = Double.MAX_VALUE, minDistanceDegree = -1;
-		double maxDistance = Double.MIN_VALUE, maxDistanceDegree = -1;
+		double minDistance = Double.MAX_VALUE, minDistanceDegree = 0;
+		double maxDistance = Double.MIN_VALUE, maxDistanceDegree = 0;
 
-		boolean rotationDirection = getRotationDirection(centerBody, target);
-		//System.out.println("Rotation: " + (rotationDirection ? "left" : "right"));
+		boolean rotationDirection = getRotationDirection(bodies, centerBody, target, timeMdklSDeltaSeconds);
 		
 		double degreeStart = Functions.getDegree(centerBody, target);
 		
-		boolean hasReachedAngleOverflow = false;
 		
-		boolean hasCompletedHalfRotation = false;
-		//winkel, bei dem eine halbe Umdrehung vollzogen ist
-		double halfRotationDegree = (degreeStart + (Math.PI)) % (Math.PI*2);
-		if(halfRotationDegree > (Math.PI))
-			halfRotationDegree -= Math.PI*2;
-		else if(halfRotationDegree < (-Math.PI))
-			halfRotationDegree += Math.PI*2;
+		boolean hasReachedAngleOverflowTop = false;
+		boolean hasReachedAngleOverflowBottom = false;
+		boolean reachedAngleOverflowTopFirst;
 		
-		//System.out.println("HRD: " + halfRotationDegree);
+		if(rotationDirection == true)
+			if(degreeStart < 0)
+				reachedAngleOverflowTopFirst = false;
+			else
+				reachedAngleOverflowTopFirst = true;
+		else
+			if(degreeStart < 0)
+				reachedAngleOverflowTopFirst = true;
+			else
+				reachedAngleOverflowTopFirst = false;
 		
 		while(true) {
 			
@@ -113,8 +116,9 @@ public class Physics {
 			////// ANALYZIS
 			// analyze current stats
 			
-			double dist = Functions.calcDistance(target, centerBody);
 			double degree = Functions.getDegree(centerBody, target);
+			
+			double dist = Functions.calcDistance(target, centerBody);
 			
 			if(dist > maxDistance) {
 				maxDistance = dist;
@@ -125,97 +129,60 @@ public class Physics {
 				minDistanceDegree = degree;
 			}
 			
-			//check if half rotation has been reached
-			if(hasCompletedHalfRotation == false) {
+			//if overflow top will be reached first
+			if(reachedAngleOverflowTopFirst) {
 				
-				//rotating left
-				
-			}
-			
-			//check if overflow has been reached
-			if(hasReachedAngleOverflow == false) {
-				//noch keinen Overflow erreicht
-				
-				//if rotating leftwards and angle is smaller
-				if(rotationDirection == true && degree < degreeStart) {
-					//Overflow has been reached!
-					hasReachedAngleOverflow = true;
+				//check if it now has been completed
+				if(hasReachedAngleOverflowTop == false) {
 					
-					//System.out.println("overflow reached!");
-				}
-				
-				//if rotating rightwards and angle is bigger
-				if(rotationDirection == false && degree > degreeStart) {
-					//Overflow has been reached!
-					hasReachedAngleOverflow = true;
+					hasReachedAngleOverflowTop =
+							(rotationDirection == true && degree < 0)
+						||	(rotationDirection == false && degree > 0);
 					
-					//System.out.println("overflow reached!");
-				}			
-				
-			}
-			//check if degree is now bigger / smaller than degreeStart
-			if(hasReachedAngleOverflow){
-				
-				//if rotating leftwards and angle is bigger
-				if(rotationDirection == true && degree > degreeStart) {
-					//one full rotation completed!
+				}else {
 					
-					System.out.println("trigger: Overflow system");
-					break;					
-				}
-				
-				//if rotating rightwards and angle is smaller
-				if(rotationDirection == false && degree < degreeStart) {
-					//one full rotation completed!
-					
-					System.out.println("trigger: Overflow system");
-					break;					
-				}
-				
-			}
-			
-			
-			if(hasReachedAngleOverflow == false) {
-				
-				
-				//check if half a rotation was completed
-				if(hasCompletedHalfRotation == false) {
-					
-					//if rotating leftwards and degree is bigger
-					if(rotationDirection == true && degree > halfRotationDegree) {
-						//completed half rotation!
+					if(hasReachedAngleOverflowBottom == false) {
 						
-						hasCompletedHalfRotation = true;
-					}
-					
-					//if rotating rightwards and degree is smaller
-					if(rotationDirection == false && degree < halfRotationDegree) {
-						//completed half rotation!
+						//check if overflowBottom has been completed
+						hasReachedAngleOverflowBottom =
+								(rotationDirection == true && degree > 0)
+							||	(rotationDirection == false && degree < 0);
 						
-						hasCompletedHalfRotation = true;
-					}
+					}else {
+						
+						if(		rotationDirection == true && degree < 0
+							||	rotationDirection == false && degree > 0)							
+							break;
+					}					
+				}	
+				
+			//has reached overflow bottom first
+			}else {
+				
+				//check if it now has been completed
+				if(hasReachedAngleOverflowBottom == false) {
+					
+					hasReachedAngleOverflowBottom =
+							(rotationDirection == true && degree > 0)
+						||	(rotationDirection == false && degree < 0);
+					
+				}else {
+					
+					if(hasReachedAngleOverflowTop == false) {
+						
+						//check if overflowBottom has been completed
+						hasReachedAngleOverflowTop =
+								(rotationDirection == true && degree < 0)
+							||	(rotationDirection == false && degree > 0);
+						
+					}else {
+						
+						if(		rotationDirection == true && degree > 0
+							||	rotationDirection == false && degree < 0)							
+							break;
+					}					
 				}
-				//check if degree is smaller / bigger than halfRotation Degree
-				//dann is das nämlich der Zeitpunkt, bei dem normalerweise der overflow eingetreten wäre
-				if(hasCompletedHalfRotation == true) {
-					
-					//if rotating leftwards and degree is smaller
-					if(rotationDirection == true && degree < halfRotationDegree) {
-						//completed full rotation!
-						
-						System.out.println("trigger: Half rotation system");
-						break;			
-					}
-					
-					//if rotating rightwards and degree is bigger
-					if(rotationDirection == false && degree > halfRotationDegree) {
-						//completed full rotation!
-						
-						System.out.println("trigger: Half rotation system");
-						break;			
-					}
-					
-				}
+				
 			}
 		}
 		
@@ -229,41 +196,36 @@ public class Physics {
 	
 	/**
 	 * @returns true for left, false for rightwards
-	 */	
-	private static boolean getRotationDirection(Body bodyCenter, Body target) {
+	 */
+	private static boolean getRotationDirection(ArrayList<Body> bodies, Body bodyCenter, Body target, double timeMdklSDelta) {
 		
+		double degree1 = Functions.getDegree(bodyCenter, target);
 		
-		if(target.vx > bodyCenter.vx) {
-			//target bewegt sich nach rechts
+		double degree2 = degree1;
+		//make sure, degree1 and degree2 arent the same (Rounding error)
+		while(degree1 == degree2) {
+			physicsIteration(bodies, timeMdklSDelta);		
+			degree2 = Functions.getDegree(bodyCenter, target);
+		}
+		
+		double degree3 = degree2;
+		//make sure, degree2 and degree3 arent the same (Rounding error)
+		while(degree2 == degree3) {
+			physicsIteration(bodies, timeMdklSDelta);		
+			degree3 = Functions.getDegree(bodyCenter, target);
+		}
+		
+		//check if an overflow has (not) happened
+		if(		   (degree1 < degree2 && degree2 < degree3)
+				|| (degree1 > degree2 && degree2 > degree3) ) {
 			
-			if(target.y < bodyCenter.y) {
-				
-				//target ist über center
-				return false;
-				
-			}else {
-				
-				//target ist unter center
-				return true;
-				
-			}
-			
+			//no overflow!
+			return degree1 < degree2;
 		}else {
-			//target bewegt sich nach links
 			
-			if(target.y < bodyCenter.y) {
-				
-				//target ist über center
-				return true;
-				
-			}else {
-				
-				//target ist unter center
-				return false;
-				
-			}
-		}		
-		
+			//Overflow!			
+			return degree1 > 0;
+		}
 	}
 	
 	public static class AnalazysResult {
