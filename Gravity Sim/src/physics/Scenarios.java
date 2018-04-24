@@ -11,7 +11,7 @@ public class Scenarios {
 		ArrayList<Body> bodies = new ArrayList<Body>();
 		
 		bodies.add(new Body(1.9E30, 0, 0, 0, 0, true));
-		bodies.add(new Body(5.9E24, 0, -150E9, 29000, 0, false));		
+		bodies.add(new Body(5.9E24, 0, -150E9, 20000, 0, false));		
 		
 		return bodies;
 	}

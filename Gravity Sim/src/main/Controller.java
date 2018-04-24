@@ -23,7 +23,7 @@ public class Controller {
 	
 	public Controller() {
 		
-		bodies = Scenarios.loadMeteoriteDoubled();
+		bodies = Scenarios.loadSolarsystem();
 		
 		window = new Window();
 	
