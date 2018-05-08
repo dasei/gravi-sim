@@ -13,7 +13,7 @@ public class Controller {
 	
 	private ArrayList<Body> bodies;
 	
-	private double timeMdklSIterationSeconds = 1;
+	private double timeMdklSIterationSeconds = 0.01;
 	private long timeLoopSleepMS = 0;
 	
 	private SimulationState state = SimulationState.SIMULATING;
@@ -23,10 +23,12 @@ public class Controller {
 	
 	public Controller() {
 		
-		bodies = Templates.loadSolarsystem();
 		
 		window = new Window();
 	
+		bodies = Templates.loadSolarsystem();
+		window.getDrawComp().setDrawWithDensity(true);
+		
 //		for(int i = 0; i < 2000000; i++) {
 //			Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 //		}
@@ -48,7 +50,7 @@ public class Controller {
 						if(state == SimulationState.SIMULATING)
 							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 						else if(state == SimulationState.ANALIZING) {//							
-							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
+							analazysResult = Physics.runAnalizis(bodies, bodies.get(1), bodies.get(2), timeMdklSIterationSeconds*10);
 							state = SimulationState.SIMULATING;
 							getWindow().onAnalyzationFinish();
 						}

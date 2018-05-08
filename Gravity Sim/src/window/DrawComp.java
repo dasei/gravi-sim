@@ -32,6 +32,8 @@ public class DrawComp extends JComponent{
 	private int lastWidth;
 	private int lastHeight;
 	
+	private boolean drawWithDensity = true;
+	
 //	private long lastEllipseRepaintID = -1;
 	
 	private Controller controller;
@@ -70,13 +72,20 @@ public class DrawComp extends JComponent{
 		drawEllipseWithFocusPoints(g2);
 		
 		int radiusPix;
-		if(bodies != null)
-			for(Body b : bodies) {
-				radiusPix = (int) (b.radiusMeters / this.pxInMeters);
-				g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
-//				drawInfoTab(g2, b);
-			}
-		
+		if(bodies != null){
+			
+			if(drawWithDensity)
+				for(Body b : bodies) {
+					radiusPix = (int) (b.radiusMeters / this.pxInMeters);
+					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+				}
+			else
+				for(Body b : bodies) {
+					radiusPix = 5;
+					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+				}
+			
+		}
 		
 		this.drawScale(g2);
 		
@@ -102,8 +111,8 @@ public class DrawComp extends JComponent{
 		double yB2 = Math.sin(-degreeRadians) * -eLin;
 		double xB2 = Math.cos(-degreeRadians) * -eLin;
 		
-		double centerX = cameraOffsetXPix - xB2;		
-		double centerY = cameraOffsetYPix + yB2;
+		double centerX = cameraOffsetXPix - xB2 + (analazysResult.bodyCenter.x / this.pxInMeters);		
+		double centerY = cameraOffsetYPix + yB2 + (analazysResult.bodyCenter.y / this.pxInMeters);
 		
 //		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-1,(int)(cameraOffsetYPix-yB1     +yB2)-1,3,3);
 //		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-1,(int)(cameraOffsetYPix-yB2     +yB2)-1,3,3);
@@ -387,5 +396,9 @@ public class DrawComp extends JComponent{
 	
 	public void setShouldRepaint(boolean shouldRepaint) {
 		this.shouldRepaint = shouldRepaint;
-	}	
+	}
+	
+	public void setDrawWithDensity(boolean drawWithDensity){
+		this.drawWithDensity = drawWithDensity;
+	}
 }
