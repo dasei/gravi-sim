@@ -69,7 +69,13 @@ public class DrawComp extends JComponent{
 		
 		this.applyMouseDrag();
 		
+//		//recalc body info tags, if simulation was running
+//		if(controller.getSimulationState() != PAUS)
+		
 		drawEllipseWithFocusPoints(g2);
+		
+		//recalc body info tags
+		this.recalcBodyInfoTags(g, bodies);
 		
 		int radiusPix;
 		if(bodies != null){
@@ -85,6 +91,8 @@ public class DrawComp extends JComponent{
 					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 				}
 			
+			//draw markers
+			drawBodyInfoTags(g, bodies);
 		}
 		
 		this.drawScale(g2);
@@ -202,12 +210,45 @@ public class DrawComp extends JComponent{
 	    g2.drawLine(pointCacheX, pointCacheY, pointStartX, pointStartY);
 	}
 
+	/**
+	 * recalculates the position of all info tags to be drawn
+	 */
+	private void recalcBodyInfoTags(Graphics g, ArrayList<Body> bodies){
+		
+		Point bodyPos;				
+		for(Body body : bodies){
+			
+			//get Position of body
+			bodyPos = getPositionOnCoordinateSystemInPixels(body.x, body.y);
+			
+			body.infoTagXPix = bodyPos.x;
+			body.infoTagYPix = bodyPos.y;
+			body.infoTagWidthPix = SwingUtilities.computeStringWidth(g.getFontMetrics(), body.getName());
+			body.infoTagFontSize = g.getFont().getSize();
+			body.infoTagHeightPix = body.infoTagFontSize + 4;
+		}
+	}
+	
+	private void drawBodyInfoTags(Graphics g, ArrayList<Body> bodies){
+		
+		for(Body body : bodies){
+			g.setColor(Color.white);
+			g.fillRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
+			g.setColor(Color.black);			
+			g.drawRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
+			g.drawLine(body.infoTagXPix, body.infoTagYPix, body.infoTagXPix + 10, body.infoTagYPix + 10);
+			g.drawString(body.getName(), body.infoTagXPix + 10 + 2, body.infoTagYPix + 10 + body.infoTagFontSize);
+		}		
+	}
 	
 	private final int scaleOffsetX = 50;
 	private final int scaleOffsetY = 50;
 	private final int scaleBarThickness = 5;
 	private volatile String scaleText;
 	private volatile int scaleLengthPix;
+	/**
+	 * refresht sozusagen die Größenskala
+	 */
 	private void recalcScale(Graphics2D g2) {
 		
 		////calculate scale line length
@@ -305,18 +346,21 @@ public class DrawComp extends JComponent{
 //--------------------------------------------------------------------------------------------------
 	//Logic
 	public void centerCamera() {
-		cameraOffsetXPix = this.getWidth()/2;
-		cameraOffsetYPix = this.getHeight()/2;
-		this.recalcOffsetMeters();
+		this.positionPointAt(0, 0, this.getWidth()/2, this.getHeight()/2);
+//		cameraOffsetXPix = ;
+//		cameraOffsetYPix = this.getHeight()/2;
+//		this.recalcOffsetMeters();
 //		cameraOffsetXMeters = cameraOffsetXPix * pxInMeters;
 //		cameraOffsetYMeters = cameraOffsetYPix * pxInMeters;
+		
 	}
 	
 	public void centerCamera(double xMeters, double yMeters) {
-		this.cameraOffsetXPix = (int) ((this.getWidth() / 2) - (xMeters / this.pxInMeters));
-		this.cameraOffsetYPix = (int) ((this.getHeight() / 2) - (yMeters / this.pxInMeters));
-		
-		this.recalcOffsetMeters();
+		this.positionPointAt(xMeters, yMeters, (this.getWidth() / 2), (this.getHeight() / 2));
+//		this.cameraOffsetXPix = (int) ((this.getWidth() / 2) - (xMeters / this.pxInMeters));
+//		this.cameraOffsetYPix = (int) ((this.getHeight() / 2) - (yMeters / this.pxInMeters));
+//		
+//		this.recalcOffsetMeters();
 //		this.cameraOffsetXMeters = this.cameraOffsetXPix * this.pxInMeters;
 //		this.cameraOffsetYMeters = this.cameraOffsetYPix * this.pxInMeters;
 	}
@@ -328,12 +372,20 @@ public class DrawComp extends JComponent{
 //		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
 //		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
 		this.recalcOffsetPix();
+		this.onCameraPosChanged();
 	}
 	
-	public Point2D.Double getPositionOnCoordinateSystem(int xPix, int yPix) {
+	public Point2D.Double getPositionOnCoordinateSystemInMeters(int xPix, int yPix) {
 		return new Point2D.Double(
 				(xPix-this.cameraOffsetXPix)*this.pxInMeters,
 				(yPix-this.cameraOffsetYPix)*this.pxInMeters
+			);
+	}
+	
+	public Point getPositionOnCoordinateSystemInPixels(double xMeters, double yMeters) {
+		return new Point(
+				(int) (xMeters/this.pxInMeters) + this.cameraOffsetXPix,
+				(int) (yMeters/this.pxInMeters) + this.cameraOffsetYPix
 			);
 	}
 	
@@ -352,7 +404,7 @@ public class DrawComp extends JComponent{
 	private double zoomStrength = 0.9D;
 	public void zoom(boolean in, int xPix, int yPix) {
 		
-		Point2D.Double point = getPositionOnCoordinateSystem(xPix, yPix);
+		Point2D.Double point = getPositionOnCoordinateSystemInMeters(xPix, yPix);
 		if(in) {
 			this.pxInMeters *= zoomStrength;
 		}else {
@@ -364,7 +416,18 @@ public class DrawComp extends JComponent{
 		
 		this.positionPointAt(point.getX(), point.getY(), xPix, yPix);
 		
-		this.recalcScale((Graphics2D) this.getGraphics());
+		onZoomChanged();
+	}
+	
+	
+	//--------------------------------------------------------------------------------------------------
+		//State-Changed methods
+	public void onZoomChanged(){
+		this.recalcScale((Graphics2D) this.getGraphics());		
+	}
+	
+	public void onCameraPosChanged(){
+//		this.recalcBodyInfoTags(this.getGraphics(), Main.getController().getBodies());
 	}
 	
 	
@@ -372,7 +435,7 @@ public class DrawComp extends JComponent{
 	private double mouseDragStartMetersX;
 	private double mouseDragStartMetersY;
 	public void startMouseDrag(MouseEvent e) {
-		Point2D.Double point = this.getPositionOnCoordinateSystem(e.getX(), e.getY());
+		Point2D.Double point = this.getPositionOnCoordinateSystemInMeters(e.getX(), e.getY());
 		this.mouseDragStartMetersX = point.getX();
 		this.mouseDragStartMetersY = point.getY();
 		this.currentlyMouseDragging = true;
@@ -388,7 +451,7 @@ public class DrawComp extends JComponent{
 		
 		Point mousePos = this.getMousePosition();
 		if(mousePos != null)
-			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);
+			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);	
 	}
 	
 //--------------------------------------------------------------------------------------------------

@@ -13,6 +13,14 @@ public class Body {
 	public double radiusMeters;
 	
 	public final boolean posFixed;
+
+	// stats of info tag
+	// used to display data like name
+	public int infoTagXPix;
+	public int infoTagYPix;
+	public int infoTagWidthPix;
+	public int infoTagHeightPix;
+	public int infoTagFontSize;
 	
 	private String name;
 	
@@ -134,5 +142,9 @@ public class Body {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getName(){
+		return this.name;
 	}
 }

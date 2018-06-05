@@ -13,7 +13,7 @@ public class Controller {
 	
 	private ArrayList<Body> bodies;
 	
-	private double timeMdklSIterationSeconds = 0.01;
+	private double timeMdklSIterationSeconds = 0.1;
 	private long timeLoopSleepMS = 0;
 	
 	private SimulationState state = SimulationState.SIMULATING;
