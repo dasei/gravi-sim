@@ -13,19 +13,27 @@ public class Body {
 	public double radiusMeters;
 	
 	public final boolean posFixed;
+
+	// stats of info tag
+	// used to display data like name
+	public int infoTagXPix;
+	public int infoTagYPix;
+	public int infoTagWidthPix;
+	public int infoTagHeightPix;
+	public int infoTagFontSize;
 	
 	private String name;
 	
-	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
-		
-		this.mass = mass;
-		this.x = x;
-		this.y = y;
-		this.vx = vx;
-		this.vy = vy;
-		
-		this.posFixed = posFixed;
-	}
+//	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
+//		
+//		this.mass = mass;
+//		this.x = x;
+//		this.y = y;
+//		this.vx = vx;
+//		this.vy = vy;
+//		
+//		this.posFixed = posFixed;
+//	}
 	
 	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed, String name, double density){
 		
@@ -43,6 +51,46 @@ public class Body {
 		this.volume = this.mass / density;
 		// V = 4/3 * r³ * pi
 		this.radiusMeters = Math.cbrt(this.volume/((4D/3D) * Math.PI));
+	}
+	
+	/**
+	 * creates a Body Object. if usePosition/useSpeed is true, position/speed of reference object
+	 * is added to  x & y / xx & vy  
+	 */
+	public Body(Body reference, boolean usePosition, boolean useSpeed, double mass, double x, double y, double vx, double vy, boolean posFixed, String name, double density){
+		this.mass = mass;
+		this.x = x;
+		this.y = y;
+		this.vx = vx;
+		this.vy = vy;
+		
+		this.posFixed = posFixed;
+		
+		this.name = name;
+		
+		// p = m / V
+		this.volume = this.mass / density;
+		// V = 4/3 * r³ * pi
+		this.radiusMeters = Math.cbrt(this.volume/((4D/3D) * Math.PI));
+		
+		if(reference == null){
+			System.out.println("given Body equals null, using given params");
+		}else{
+			
+			if(usePosition){
+				this.x += reference.x;
+				this.y += reference.y;
+			}
+			
+			if(useSpeed){
+				this.vx += reference.vx;
+				this.vy += reference.vy;
+			}
+			
+		}
+			
+		//if(usePosition)
+		
 	}
 	
 	private double forceCacheX = 0;
@@ -94,5 +142,9 @@ public class Body {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getName(){
+		return this.name;
 	}
 }

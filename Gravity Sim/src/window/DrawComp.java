@@ -32,6 +32,8 @@ public class DrawComp extends JComponent{
 	private int lastWidth;
 	private int lastHeight;
 	
+	private boolean drawWithDensity = true;
+	
 //	private long lastEllipseRepaintID = -1;
 	
 	private Controller controller;
@@ -61,18 +63,45 @@ public class DrawComp extends JComponent{
 			//modify offset if mouse was dragged (while pressing middle mouse button)
 			this.applyMouseDrag();
 		
-		//draw ellipse and focus points
+
+		//modify offset if drawcomp was resized
+		if(this.getWidth() != this.lastWidth || this.getHeight() != this.lastHeight) {
+			this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
+		}
+		
+		this.applyMouseDrag();
+		
+//		//recalc body info tags, if simulation was running
+//		if(controller.getSimulationState() != PAUS)
+		
+
 		drawEllipseWithFocusPoints(g2);
 		
-		//draw bodies
-		int radiusPix;
-		if(bodies != null)
-			for(Body b : bodies) {
-				radiusPix = (int) (b.radiusMeters / this.pxInMeters);
-				g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
-			}
+
+		//recalc body info tags
+		this.recalcBodyInfoTags(g, bodies);
+
 		
-		//draw scale in bottom right corner
+		//
+		int radiusPix;
+		if(bodies != null){
+			
+			if(drawWithDensity)
+				for(Body b : bodies) {
+					radiusPix = (int) (b.radiusMeters / this.pxInMeters);
+					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+				}
+			else
+				for(Body b : bodies) {
+					radiusPix = 5;
+					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+				}
+			
+			//draw markers
+			drawBodyInfoTags(g, bodies);
+		}
+		
+
 		this.drawScale(g2);
 		
 		
@@ -102,8 +131,8 @@ public class DrawComp extends JComponent{
 		double yB2 = Math.sin(-degreeRadians) * -eLin;
 		double xB2 = Math.cos(-degreeRadians) * -eLin;
 		
-		double centerX = cameraOffsetXPix - xB2;		
-		double centerY = cameraOffsetYPix + yB2;
+		double centerX = cameraOffsetXPix - xB2 + (analazysResult.bodyCenter.x / this.pxInMeters);		
+		double centerY = cameraOffsetYPix + yB2 + (analazysResult.bodyCenter.y / this.pxInMeters);
 		
 //		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-1,(int)(cameraOffsetYPix-yB1     +yB2)-1,3,3);
 //		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-1,(int)(cameraOffsetYPix-yB2     +yB2)-1,3,3);
@@ -193,12 +222,45 @@ public class DrawComp extends JComponent{
 	    g2.drawLine(pointCacheX, pointCacheY, pointStartX, pointStartY);
 	}
 
+	/**
+	 * recalculates the position of all info tags to be drawn
+	 */
+	private void recalcBodyInfoTags(Graphics g, ArrayList<Body> bodies){
+		
+		Point bodyPos;				
+		for(Body body : bodies){
+			
+			//get Position of body
+			bodyPos = getPositionOnCoordinateSystemInPixels(body.x, body.y);
+			
+			body.infoTagXPix = bodyPos.x;
+			body.infoTagYPix = bodyPos.y;
+			body.infoTagWidthPix = SwingUtilities.computeStringWidth(g.getFontMetrics(), body.getName());
+			body.infoTagFontSize = g.getFont().getSize();
+			body.infoTagHeightPix = body.infoTagFontSize + 4;
+		}
+	}
+	
+	private void drawBodyInfoTags(Graphics g, ArrayList<Body> bodies){
+		
+		for(Body body : bodies){
+			g.setColor(Color.white);
+			g.fillRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
+			g.setColor(Color.black);			
+			g.drawRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
+			g.drawLine(body.infoTagXPix, body.infoTagYPix, body.infoTagXPix + 10, body.infoTagYPix + 10);
+			g.drawString(body.getName(), body.infoTagXPix + 10 + 2, body.infoTagYPix + 10 + body.infoTagFontSize);
+		}		
+	}
 	
 	private final int scaleOffsetX = 50;
 	private final int scaleOffsetY = 50;
 	private final int scaleBarThickness = 5;
 	private volatile String scaleText;
 	private volatile int scaleLengthPix;
+	/**
+	 * refresht sozusagen die Größenskala
+	 */
 	private void recalcScale(Graphics2D g2) {
 		
 		////calculate scale line length
@@ -297,12 +359,25 @@ public class DrawComp extends JComponent{
 	
 //--------------------------------------------------------------------------------------------------
 	//Logic
+	public void centerCamera() {
+		this.positionPointAt(0, 0, this.getWidth()/2, this.getHeight()/2);
+//		cameraOffsetXPix = ;
+//		cameraOffsetYPix = this.getHeight()/2;
+//		this.recalcOffsetMeters();
+//		cameraOffsetXMeters = cameraOffsetXPix * pxInMeters;
+//		cameraOffsetYMeters = cameraOffsetYPix * pxInMeters;
+		
+	}
+
 	
 	public void centerCamera(double xMeters, double yMeters) {
-		this.cameraOffsetXPix = (int) ((this.getWidth() / 2D) - (xMeters / this.pxInMeters));
-		this.cameraOffsetYPix = (int) ((this.getHeight() / 2D) - (yMeters / this.pxInMeters));
-		
-		this.recalcOffsetMeters();
+		this.positionPointAt(xMeters, yMeters, (this.getWidth() / 2), (this.getHeight() / 2));
+//		this.cameraOffsetXPix = (int) ((this.getWidth() / 2) - (xMeters / this.pxInMeters));
+//		this.cameraOffsetYPix = (int) ((this.getHeight() / 2) - (yMeters / this.pxInMeters));
+//		
+//		this.recalcOffsetMeters();
+//		this.cameraOffsetXMeters = this.cameraOffsetXPix * this.pxInMeters;
+//		this.cameraOffsetYMeters = this.cameraOffsetYPix * this.pxInMeters;
 	}
 	
 	public void positionPointAt(double xMeters, double yMeters, int xPixDestination, int yPixDestination) {
@@ -310,12 +385,20 @@ public class DrawComp extends JComponent{
 		this.cameraOffsetYMeters = (yPixDestination * this.pxInMeters) - yMeters;
 
 		this.recalcOffsetPix();
+		this.onCameraPosChanged();
 	}
 	
-	public Point2D.Double getPositionOnCoordinateSystem(int xPix, int yPix) {
+	public Point2D.Double getPositionOnCoordinateSystemInMeters(int xPix, int yPix) {
 		return new Point2D.Double(
 				(double) (xPix - this.cameraOffsetXPix) * this.pxInMeters,
 				(double) (yPix - this.cameraOffsetYPix) * this.pxInMeters
+			);
+	}
+	
+	public Point getPositionOnCoordinateSystemInPixels(double xMeters, double yMeters) {
+		return new Point(
+				(int) (xMeters/this.pxInMeters) + this.cameraOffsetXPix,
+				(int) (yMeters/this.pxInMeters) + this.cameraOffsetYPix
 			);
 	}
 	
@@ -334,7 +417,7 @@ public class DrawComp extends JComponent{
 	private double zoomStrength = 0.9D;
 	public void zoom(boolean in, int xPix, int yPix) {
 		
-		Point2D.Double point = getPositionOnCoordinateSystem(xPix, yPix);
+		Point2D.Double point = getPositionOnCoordinateSystemInMeters(xPix, yPix);
 		if(in) {
 			this.pxInMeters *= zoomStrength;
 		}else {
@@ -346,9 +429,18 @@ public class DrawComp extends JComponent{
 		
 		this.positionPointAt(point.getX(), point.getY(), xPix, yPix);
 		
-		System.out.println(this.pxInMeters);
+		onZoomChanged();
+	}
+	
+	
+	//--------------------------------------------------------------------------------------------------
+		//State-Changed methods
+	public void onZoomChanged(){
+		this.recalcScale((Graphics2D) this.getGraphics());		
+	}
+	
+	public void onCameraPosChanged(){
 		
-		this.recalcScale((Graphics2D) this.getGraphics());
 	}
 	
 	
@@ -356,7 +448,7 @@ public class DrawComp extends JComponent{
 	private double mouseDragStartMetersX;
 	private double mouseDragStartMetersY;
 	public void startMouseDrag(MouseEvent e) {
-		Point2D.Double point = this.getPositionOnCoordinateSystem(e.getX(), e.getY());
+		Point2D.Double point = this.getPositionOnCoordinateSystemInMeters(e.getX(), e.getY());
 		this.mouseDragStartMetersX = point.getX();
 		this.mouseDragStartMetersY = point.getY();
 		this.currentlyMouseDragging = true;
@@ -372,7 +464,7 @@ public class DrawComp extends JComponent{
 		
 		Point mousePos = this.getMousePosition();
 		if(mousePos != null)
-			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);
+			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);	
 	}
 	
 //--------------------------------------------------------------------------------------------------
@@ -380,5 +472,9 @@ public class DrawComp extends JComponent{
 	
 	public void setShouldRepaint(boolean shouldRepaint) {
 		this.shouldRepaint = shouldRepaint;
-	}	
+	}
+	
+	public void setDrawWithDensity(boolean drawWithDensity){
+		this.drawWithDensity = drawWithDensity;
+	}
 }
