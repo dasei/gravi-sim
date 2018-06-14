@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import main.Main;
+import physics.Body;
 
 public class Window extends JFrame{
 	private static final long serialVersionUID = 335663715638775223L;
@@ -27,6 +28,7 @@ public class Window extends JFrame{
 	private ImageIcon iconResume;
 	
 	private JButton bAnalyze;
+	
 	
 //	private JComboBox<String> optTool;
 //	private String[] optToolOptions = {"Place"};
@@ -81,6 +83,8 @@ public class Window extends JFrame{
 			});
 			pBottomBar.add(bAnalyze);
 			
+			
+			
 //			optTool = new JComboBox(optToolOptions);
 //			optTool.setSelectedItem(optToolOptions[0]);			
 //			pBottomBar.add(optTool);
@@ -105,7 +109,16 @@ public class Window extends JFrame{
 			public void run() {
 				this.setName("repaint Thread");
 				
+				Body bodyToFollow;
 				while(true) {
+					
+					if(Main.getController() != null) {
+						bodyToFollow = Main.getController().getBodyToFollow();
+						if(bodyToFollow != null) {
+							dc.centerCamera(bodyToFollow.x, bodyToFollow.y);
+						}
+					}
+					
 					dc.repaint();
 //					try {
 //						Thread.sleep(0);

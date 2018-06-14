@@ -360,7 +360,7 @@ public class DrawComp extends JComponent{
 //--------------------------------------------------------------------------------------------------
 	//Logic
 	public void centerCamera() {
-		this.positionPointAt(0, 0, this.getWidth()/2, this.getHeight()/2);
+		this.centerCamera(0, 0);;
 //		cameraOffsetXPix = ;
 //		cameraOffsetYPix = this.getHeight()/2;
 //		this.recalcOffsetMeters();
@@ -386,6 +386,13 @@ public class DrawComp extends JComponent{
 
 		this.recalcOffsetPix();
 		this.onCameraPosChanged();
+	}
+	
+	public void resetPosition() {
+		this.cameraOffsetXPix = 0;
+		this.cameraOffsetYPix = 0;
+		this.cameraOffsetXMeters = 0;
+		this.cameraOffsetYMeters = 0;
 	}
 	
 	public Point2D.Double getPositionOnCoordinateSystemInMeters(int xPix, int yPix) {
@@ -441,8 +448,7 @@ public class DrawComp extends JComponent{
 	
 	public void onCameraPosChanged(){
 		
-	}
-	
+	}	
 	
 	private volatile boolean currentlyMouseDragging = false;
 	private double mouseDragStartMetersX;
@@ -464,7 +470,11 @@ public class DrawComp extends JComponent{
 		
 		Point mousePos = this.getMousePosition();
 		if(mousePos != null)
-			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);	
+			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);
+	}
+	
+	public String toString() {
+		return "dc: camOffXPx:" + cameraOffsetXPix + ", camOffYPx:" + cameraOffsetYPix;
 	}
 	
 //--------------------------------------------------------------------------------------------------

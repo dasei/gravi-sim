@@ -7,9 +7,11 @@ import physics.Physics;
 import physics.Physics.AnalazysResult;
 import physics.Templates;
 import window.Window;
+import window.WindowOptions;
 
 public class Controller {
 	private Window window;
+	private WindowOptions windowOptions;
 	
 	private ArrayList<Body> bodies;
 	
@@ -21,20 +23,27 @@ public class Controller {
 	//Ellipse zeichnen
 	private AnalazysResult analazysResult;
 	
+	//Follow mode
+	private Body bodyToFollow;
+	
 	public Controller() {
 		
 		
 		window = new Window();
+		window.getDrawComp().setDrawWithDensity(true);
+		
+		windowOptions = new WindowOptions();
 	
 		bodies = Templates.loadSolarsystem();
-		window.getDrawComp().setDrawWithDensity(true);
+		
 		
 //		for(int i = 0; i < 2000000; i++) {
 //			Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 //		}
 //		System.out.println("woop");
 		
-		startLoop();	
+		window.getDrawComp().resetPosition();
+		startLoop();
 	}
 	
 	private void startLoop() {
@@ -103,6 +112,14 @@ public class Controller {
 		return true;
 	}
 	
+	
+//--------------------------------------------------------------------------------------------------
+	//FOLLOW MODE
+	public void follow(Body body) {
+		//TODO all
+		this.bodyToFollow = body;
+	}
+	
 //--------------------------------------------------------------------------------------------------
 	//SETTERS
 	
@@ -117,6 +134,10 @@ public class Controller {
 		return this.window;
 	}
 	
+	public WindowOptions getWindowOptions() {
+		return this.windowOptions;
+	}
+	
 	public ArrayList<Body> getBodies(){
 		return this.bodies;
 	}
@@ -127,5 +148,9 @@ public class Controller {
 	
 	public AnalazysResult getAnalazysResult() {
 		return this.analazysResult;
+	}
+	
+	public Body getBodyToFollow() {
+		return this.bodyToFollow;
 	}
 }

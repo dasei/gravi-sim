@@ -1,5 +1,7 @@
 package physics;
 
+import main.Main;
+
 public class Body {
 	public double mass;
 	
@@ -24,6 +26,8 @@ public class Body {
 	
 	private String name;
 	
+	private long id = Main.getNewID();
+	
 //	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
 //		
 //		this.mass = mass;
@@ -45,7 +49,7 @@ public class Body {
 		
 		this.posFixed = posFixed;
 		
-		this.name = name;
+		this.setName(name);
 		
 		// p = m / V
 		this.volume = this.mass / density;
@@ -66,7 +70,7 @@ public class Body {
 		
 		this.posFixed = posFixed;
 		
-		this.name = name;
+		this.setName(name);
 		
 		// p = m / V
 		this.volume = this.mass / density;
@@ -133,7 +137,14 @@ public class Body {
 	
 	public String toString() {
 		return
-			"Body: mass: " + this.mass 
+			"Body: " + (this.name == null ? "<null>" : this.name)
+			+ ", " + this.id;
+	}
+	
+	public String toString2() {
+		return
+			"Body: " + (this.name == null ? "<null>" : this.name)
+			+ ", mass: " + this.mass
 			+ ", x: " + this.x 
 			+ ", y: " + this.y 
 			+ ", speedX: " + this.vx
@@ -141,7 +152,7 @@ public class Body {
 	}
 	
 	public void setName(String name) {
-		this.name = name;
+		this.name = name.replace(":", "_");
 	}
 	
 	public String getName(){
