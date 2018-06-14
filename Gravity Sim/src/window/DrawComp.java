@@ -37,14 +37,7 @@ public class DrawComp extends JComponent{
 	private Controller controller;
 	
 	public DrawComp() {
-//		this.addComponentListener(new ComponentListener() {
-//			public void componentHidden(ComponentEvent e) {}
-//			public void componentMoved(ComponentEvent e) {}
-//			public void componentResized(ComponentEvent e) {
-//				
-//			}
-//			public void componentShown(ComponentEvent e) {}
-//		});
+		
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -59,31 +52,36 @@ public class DrawComp extends JComponent{
 		}
 		ArrayList<Body> bodies = controller.getBodies();
 		
+		////// all offset-modifying related things
+			//modify offset if drawcomp was resized
+			if(this.getWidth() != this.lastWidth || this.getHeight() != this.lastHeight) {
+				this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
+			}
+			
+			//modify offset if mouse was dragged (while pressing middle mouse button)
+			this.applyMouseDrag();
 		
-		//modify offset if drawcomp was resized
-		if(this.getWidth() != this.lastWidth || this.getHeight() != this.lastHeight) {
-			this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
-		}
-		
-		this.applyMouseDrag();
-		
+		//draw ellipse and focus points
 		drawEllipseWithFocusPoints(g2);
 		
+		//draw bodies
 		int radiusPix;
 		if(bodies != null)
 			for(Body b : bodies) {
 				radiusPix = (int) (b.radiusMeters / this.pxInMeters);
 				g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
-//				drawInfoTab(g2, b);
 			}
 		
-		
+		//draw scale in bottom right corner
 		this.drawScale(g2);
 		
+		
+		
+		
+		//save last width & height, to notice when component was resized (also maximized or minimized)
+		// => max-/ minimizing the window will not be noticed by a ComponentListener 
 		lastWidth = this.getWidth();
 		lastHeight = this.getHeight();
-		
-		System.out.println(this.cameraOffsetXMeters);
 	}
 	
 	private void drawEllipseWithFocusPoints(Graphics2D g2) {
@@ -285,6 +283,8 @@ public class DrawComp extends JComponent{
 		if(scaleText == null)
 			recalcScale(g2);
 		
+		g2.setColor(Color.DARK_GRAY);
+		
 		g2.drawRect(this.getWidth() - scaleOffsetX - (int) this.scaleLengthPix, this.getHeight() - scaleOffsetY - this.scaleBarThickness, (int) this.scaleLengthPix, this.scaleBarThickness);
 		
 		g2.drawString(
@@ -297,36 +297,19 @@ public class DrawComp extends JComponent{
 	
 //--------------------------------------------------------------------------------------------------
 	//Logic
-	public void centerCamera() {
-		cameraOffsetXPix = this.getWidth()/2;
-		cameraOffsetYPix = this.getHeight()/2;
-		this.recalcOffsetMeters();
-//		cameraOffsetXMeters = cameraOffsetXPix * pxInMeters;
-//		cameraOffsetYMeters = cameraOffsetYPix * pxInMeters;
-	}
 	
 	public void centerCamera(double xMeters, double yMeters) {
-		this.cameraOffsetXPix = (int) ((this.getWidth() / 2) - (xMeters / this.pxInMeters));
-		this.cameraOffsetYPix = (int) ((this.getHeight() / 2) - (yMeters / this.pxInMeters));
+		this.cameraOffsetXPix = (int) ((this.getWidth() / 2D) - (xMeters / this.pxInMeters));
+		this.cameraOffsetYPix = (int) ((this.getHeight() / 2D) - (yMeters / this.pxInMeters));
 		
 		this.recalcOffsetMeters();
-//		this.cameraOffsetXMeters = this.cameraOffsetXPix * this.pxInMeters;
-//		this.cameraOffsetYMeters = this.cameraOffsetYPix * this.pxInMeters;
 	}
 	
 	public void positionPointAt(double xMeters, double yMeters, int xPixDestination, int yPixDestination) {
-//		Point mousePos = this.getMousePosition();
-		
-		
 		this.cameraOffsetXMeters = (xPixDestination * this.pxInMeters) - xMeters;
 		this.cameraOffsetYMeters = (yPixDestination * this.pxInMeters) - yMeters;
-		
-//		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
-//		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
+
 		this.recalcOffsetPix();
-		
-//		Point mousePos2 = this.getMousePosition();
-//		System.out.println(getPositionOnCoordinateSystem(mousePos.x, mousePos.y) + " " + getPositionOnCoordinateSystem(mousePos2.x, mousePos2.y));
 	}
 	
 	public Point2D.Double getPositionOnCoordinateSystem(int xPix, int yPix) {
