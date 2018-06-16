@@ -1,8 +1,5 @@
 package window;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
@@ -11,9 +8,9 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import events.EventManager;
 import main.Main;
 import physics.Body;
 
@@ -34,12 +31,13 @@ public class Window extends JFrame{
 //	private String[] optToolOptions = {"Place"};
 	
 	public Window() {
-		loadIcons();
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		dc = new DrawComp();
 		dc.setPreferredSize(new Dimension(500,500));
+		dc.setFocusable(true);
+		dc.addKeyListener(new EventManager());
 		dc.addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if(e.getWheelRotation() > 0)
@@ -64,34 +62,36 @@ public class Window extends JFrame{
 		this.add(dc);
 		
 		
-		JPanel pBottomBar = new JPanel();
-			bPauseResume = new JButton(iconPause);			
-			bPauseResume.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Main.getController().pauseOrResume();
-					updatePauseResumeButton();
-				}
-			});
-			pBottomBar.add(bPauseResume);
-			
-			bAnalyze = new JButton("Analyze");
-			bAnalyze.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Main.getController().startAnalyzation();
-					updatePauseResumeButton();
-				}
-			});
-			pBottomBar.add(bAnalyze);
-			
-			
-			
-//			optTool = new JComboBox(optToolOptions);
-//			optTool.setSelectedItem(optToolOptions[0]);			
-//			pBottomBar.add(optTool);
-			
-		this.add(pBottomBar, BorderLayout.SOUTH);
+//		JPanel pBottomBar = new JPanel();
+//			bPauseResume = new JButton(iconPause);
+//			
+//			bPauseResume.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					Main.getController().pauseOrResume();
+//					updatePauseResumeButton();
+//				}
+//			});
+//			pBottomBar.add(bPauseResume);
+//			
+//			bAnalyze = new JButton("Analyze");
+//			bAnalyze.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					Main.getController().startAnalyzation();
+//					updatePauseResumeButton();
+//				}
+//			});
+//			pBottomBar.add(bAnalyze);
+//			
+//			
+//			
+////			optTool = new JComboBox(optToolOptions);
+////			optTool.setSelectedItem(optToolOptions[0]);			
+////			pBottomBar.add(optTool);
+//			
+//		this.add(pBottomBar, BorderLayout.SOUTH);
 		
 		
+				
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);		
@@ -99,10 +99,7 @@ public class Window extends JFrame{
 		startRepaintThread();
 	}
 	
-	private void loadIcons() {
-		iconPause = new ImageIcon("res/icons/icon_pause.png", "pause");
-		iconResume = new ImageIcon("res/icons/icon_resume.png", "resume");		
-	}
+	
 	
 	private void startRepaintThread() {
 		(new Thread() {
@@ -131,23 +128,7 @@ public class Window extends JFrame{
 //--------------------------------------------------------------------------------------------------
 	// update methods
 	
-	private void updatePauseResumeButton() {
-		switch(Main.getController().getSimulationState()) {
-		case PAUSED:
-			//bPauseResume.setText("resume");
-			bPauseResume.setIcon(iconResume);
-			bPauseResume.setEnabled(true);
-			break;
-		case SIMULATING:
-//			bPauseResume.setText("pause");
-			bPauseResume.setIcon(iconPause);
-			bPauseResume.setEnabled(true);
-			break;		
-		default:
-			bPauseResume.setEnabled(false);
-			break;
-		}
-	}
+	
 	
 //	private void setOptToolEnabled(boolean enabled) {
 //		this.optTool.setEnabled(enabled);
@@ -180,13 +161,13 @@ public class Window extends JFrame{
 	
 //--------------------------------------------------------------------------------------------------
 	// Events
-	public void onAnalyzationFinish() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				updatePauseResumeButton();
-			}
-		});
-	}
+//	public void onAnalyzationFinish() {
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				updatePauseResumeButton();
+//			}
+//		});
+//	}
 //--------------------------------------------------------------------------------------------------
 	// Getters
 	

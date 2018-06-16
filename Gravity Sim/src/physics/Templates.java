@@ -18,9 +18,10 @@ public class Templates {
 		//bodies.add(new Body(1.9E30, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
 		//bodies.add(new Body(MASS_EARTH, 0, -150E9, -19000, 0, false, "Erde", DENSITY_EARTH));
 		
-		Body sun = new Body(MASS_SUN, 0, 0, 0, 0, false, "Sonne", DENSITY_SUN);
+		Body sun = new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN);
 		Body earth = new Body(sun, true, true, MASS_EARTH, 0, -150E9, 29000, 0, false, "Erde", DENSITY_EARTH);
 		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 1023, false, "Mond", DENSITY_MOON);
+//		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 700, false, "Mond", DENSITY_MOON);
 		bodies.add(sun);
 		bodies.add(earth);
 		bodies.add(moon);
@@ -29,14 +30,14 @@ public class Templates {
 		return bodies;
 	}
 	
-//	public static ArrayList<Body> loadMeteorite() {
-//		ArrayList<Body> bodies = new ArrayList<Body>();
-//		
-//		bodies.add(new Body(1.9E30, 0, 0, 0, 0, true, "Sonne"));
-//		bodies.add(new Body(5.9E24, 0, -150E9, 20000, 10000, false, ""));
-//		
-//		return bodies;
-//	}
+	public static ArrayList<Body> loadMeteorite() {
+		ArrayList<Body> bodies = new ArrayList<Body>();
+		
+		bodies.add(new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
+		bodies.add(new Body(MASS_EARTH, 0, -150E9, 20000, 10000, false, "earth", DENSITY_EARTH));
+		
+		return bodies;
+	}
 	
 	public static ArrayList<Body> loadSolarsystemDoubled() {
 		ArrayList<Body> bodies = new ArrayList<Body>();

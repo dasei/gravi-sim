@@ -2,6 +2,7 @@ package main;
 
 import java.util.ArrayList;
 
+import events.EventManager;
 import physics.Body;
 import physics.Physics;
 import physics.Physics.AnalazysResult;
@@ -42,7 +43,7 @@ public class Controller {
 //		}
 //		System.out.println("woop");
 		
-		window.getDrawComp().resetPosition();
+		window.getDrawComp().positionPointAt(0, 0, 0, 0);
 		startLoop();
 	}
 	
@@ -60,8 +61,9 @@ public class Controller {
 							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
 						else if(state == SimulationState.ANALIZING) {//							
 							analazysResult = Physics.runAnalizis(bodies, bodies.get(1), bodies.get(2), timeMdklSIterationSeconds*10);
+//							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
 							state = SimulationState.SIMULATING;
-							getWindow().onAnalyzationFinish();
+							EventManager.onAnalyzationFinish();
 						}
 					}
 					

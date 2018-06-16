@@ -1,5 +1,7 @@
 package main;
 
+import events.EventManager;
+
 public class Main {
 	
 	private static Controller controller;

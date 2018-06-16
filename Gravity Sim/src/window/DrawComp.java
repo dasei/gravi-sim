@@ -19,6 +19,21 @@ import physics.Physics.AnalazysResult;
 public class DrawComp extends JComponent{
 	private static final long serialVersionUID = 41048338189849420L;
 	
+	public static enum ColorPreset{
+		LIGHT(new Color(255, 255, 255), new Color(96, 101, 109), new Color(0, 0, 0)), 
+		DARK(new Color(0, 0, 0), new Color(96, 101, 109), new Color(255, 255, 255)),
+		RED(new Color(0, 0, 0), new Color(96, 101, 109), new Color(209, 0, 0));
+		
+		public final Color background;
+		public final Color midground;
+		public final Color foreground;
+		private ColorPreset(Color background, Color midground, Color foreground) {
+			this.background = background;
+			this.midground = midground;
+			this.foreground = foreground;
+		}
+	}
+	
 //	private double pxInMeters = 100000;
 	private double pxInMeters = 1E9;
 	
@@ -32,17 +47,26 @@ public class DrawComp extends JComponent{
 	private int lastWidth;
 	private int lastHeight;
 	
+	//draw options
+	public static final boolean drawBodyInfoTagsOnDefault = true;
+	private boolean drawBodyInfoTags = drawBodyInfoTagsOnDefault;
+	public static final boolean drawFocusPointsOnDefault = true;
+	private boolean drawFocusPoints = drawFocusPointsOnDefault;
 	private boolean drawWithDensity = true;
-	
-//	private long lastEllipseRepaintID = -1;
 	
 	private Controller controller;
 	
+	private final ColorPreset defaultColorPreset = ColorPreset.DARK;
+	private Color colorBackground;
+	private Color colorMidground;
+	private Color colorForeground;	
+	
 	public DrawComp() {
-		
+		this.setOpaque(true);
+		loadColorPreset(defaultColorPreset);		
 	}
 	
-	public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {	
 		if(!shouldRepaint)
 			return;
 		Graphics2D g2 = (Graphics2D) g;
@@ -55,15 +79,7 @@ public class DrawComp extends JComponent{
 		ArrayList<Body> bodies = controller.getBodies();
 		
 		////// all offset-modifying related things
-			//modify offset if drawcomp was resized
-			if(this.getWidth() != this.lastWidth || this.getHeight() != this.lastHeight) {
-				this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
-			}
 			
-			//modify offset if mouse was dragged (while pressing middle mouse button)
-			this.applyMouseDrag();
-		
-
 		//modify offset if drawcomp was resized
 		if(this.getWidth() != this.lastWidth || this.getHeight() != this.lastHeight) {
 			this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
@@ -71,20 +87,19 @@ public class DrawComp extends JComponent{
 		
 		this.applyMouseDrag();
 		
-//		//recalc body info tags, if simulation was running
-//		if(controller.getSimulationState() != PAUS)
 		
-
-		drawEllipseWithFocusPoints(g2);
+		//draw background
+		g2.setColor(colorBackground);
+		g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
-
-		//recalc body info tags
-		this.recalcBodyInfoTags(g, bodies);
-
 		
-		//
+		drawEllipseWithFocusPoints(g2, drawFocusPoints);
+		
+		
+		//draw bodies /w infotags
 		int radiusPix;
 		if(bodies != null){
+			g2.setColor(colorForeground);
 			
 			if(drawWithDensity)
 				for(Body b : bodies) {
@@ -97,14 +112,16 @@ public class DrawComp extends JComponent{
 					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 				}
 			
-			//draw markers
-			drawBodyInfoTags(g, bodies);
+			
+			//recalc body info tag positions
+			if(drawBodyInfoTags) {
+				recalcBodyInfoTags(g, bodies);
+				drawBodyInfoTags(g, bodies);
+			}
 		}
 		
 
 		this.drawScale(g2);
-		
-		
 		
 		
 		//save last width & height, to notice when component was resized (also maximized or minimized)
@@ -113,9 +130,7 @@ public class DrawComp extends JComponent{
 		lastHeight = this.getHeight();
 	}
 	
-	private void drawEllipseWithFocusPoints(Graphics2D g2) {
-//		System.out.println("repainting ellipse");		
-		
+	private void drawEllipseWithFocusPoints(Graphics2D g2, boolean drawFocusPoints) {
 		AnalazysResult analazysResult = Main.getController().getAnalazysResult();
 		
 		if(analazysResult == null)
@@ -134,20 +149,20 @@ public class DrawComp extends JComponent{
 		double centerX = cameraOffsetXPix - xB2 + (analazysResult.bodyCenter.x / this.pxInMeters);		
 		double centerY = cameraOffsetYPix + yB2 + (analazysResult.bodyCenter.y / this.pxInMeters);
 		
-//		g2.fillRect((int)(cameraOffsetXPix+xB1     -xB2)-1,(int)(cameraOffsetYPix-yB1     +yB2)-1,3,3);
-//		g2.fillRect((int)(cameraOffsetXPix+xB2     -xB2)-1,(int)(cameraOffsetYPix-yB2     +yB2)-1,3,3);
-
-		g2.fillRect((int) (centerX + xB1) - 1, (int) (centerY - yB1) - 1, 3, 3);
-		g2.fillRect((int) (centerX + xB2) - 1, (int) (centerY - yB2) - 1, 3, 3);
-
 		
+		if(drawFocusPoints) {
+			g2.setColor(colorMidground);
+			
+			g2.fillRect((int) (centerX + xB1) - 1, (int) (centerY - yB1) - 1, 3, 3);
+			g2.fillRect((int) (centerX + xB2) - 1, (int) (centerY - yB2) - 1, 3, 3);
+		}
 
 		drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, centerX, centerY);
 	}
 	
 	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double centerX, double centerY) {
 		
-		g2.setColor(Color.GRAY);
+		g2.setColor(colorMidground);
 		
 		double schrittweite = 2;
 		int wdh = (int)(4*aPix);
@@ -243,10 +258,11 @@ public class DrawComp extends JComponent{
 	
 	private void drawBodyInfoTags(Graphics g, ArrayList<Body> bodies){
 		
+		
 		for(Body body : bodies){
-			g.setColor(Color.white);
+			g.setColor(colorBackground);
 			g.fillRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
-			g.setColor(Color.black);			
+			g.setColor(colorMidground);			
 			g.drawRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
 			g.drawLine(body.infoTagXPix, body.infoTagYPix, body.infoTagXPix + 10, body.infoTagYPix + 10);
 			g.drawString(body.getName(), body.infoTagXPix + 10 + 2, body.infoTagYPix + 10 + body.infoTagFontSize);
@@ -360,24 +376,12 @@ public class DrawComp extends JComponent{
 //--------------------------------------------------------------------------------------------------
 	//Logic
 	public void centerCamera() {
-		this.centerCamera(0, 0);;
-//		cameraOffsetXPix = ;
-//		cameraOffsetYPix = this.getHeight()/2;
-//		this.recalcOffsetMeters();
-//		cameraOffsetXMeters = cameraOffsetXPix * pxInMeters;
-//		cameraOffsetYMeters = cameraOffsetYPix * pxInMeters;
-		
+		this.centerCamera(0, 0);		
 	}
 
 	
 	public void centerCamera(double xMeters, double yMeters) {
 		this.positionPointAt(xMeters, yMeters, (this.getWidth() / 2), (this.getHeight() / 2));
-//		this.cameraOffsetXPix = (int) ((this.getWidth() / 2) - (xMeters / this.pxInMeters));
-//		this.cameraOffsetYPix = (int) ((this.getHeight() / 2) - (yMeters / this.pxInMeters));
-//		
-//		this.recalcOffsetMeters();
-//		this.cameraOffsetXMeters = this.cameraOffsetXPix * this.pxInMeters;
-//		this.cameraOffsetYMeters = this.cameraOffsetYPix * this.pxInMeters;
 	}
 	
 	public void positionPointAt(double xMeters, double yMeters, int xPixDestination, int yPixDestination) {
@@ -391,8 +395,7 @@ public class DrawComp extends JComponent{
 	public void resetPosition() {
 		this.cameraOffsetXPix = 0;
 		this.cameraOffsetYPix = 0;
-		this.cameraOffsetXMeters = 0;
-		this.cameraOffsetYMeters = 0;
+		this.recalcOffsetMeters();
 	}
 	
 	public Point2D.Double getPositionOnCoordinateSystemInMeters(int xPix, int yPix) {
@@ -460,10 +463,6 @@ public class DrawComp extends JComponent{
 		this.currentlyMouseDragging = true;
 	}
 	
-	public void stopMouseDrag() {
-		this.currentlyMouseDragging = false;
-	}
-	
 	private void applyMouseDrag() {
 		if(!this.currentlyMouseDragging)
 			return;
@@ -473,9 +472,41 @@ public class DrawComp extends JComponent{
 			this.positionPointAt(this.mouseDragStartMetersX, this.mouseDragStartMetersY, mousePos.x, mousePos.y);
 	}
 	
+	public void stopMouseDrag() {
+		this.currentlyMouseDragging = false;
+	}
+	
 	public String toString() {
 		return "dc: camOffXPx:" + cameraOffsetXPix + ", camOffYPx:" + cameraOffsetYPix;
 	}
+	
+	
+//--------------------------------------------------------------------------------------------------
+	//COLORS
+	public void loadColorPreset(ColorPreset colorPreset) {
+		this.colorBackground = colorPreset.background;
+		this.colorMidground = colorPreset.midground;
+		this.colorForeground = colorPreset.foreground;
+	}
+	
+	public void loadDefaultColorPreset() {
+		loadColorPreset(this.defaultColorPreset);
+	}
+	
+//--------------------------------------------------------------------------------------------------
+	//GETTERS
+	public Color getColorBackground() {
+		return colorBackground;
+	}
+
+	public Color getColorMidground() {
+		return colorMidground;
+	}
+
+	public Color getColorForeground() {
+		return colorForeground;
+	}
+	
 	
 //--------------------------------------------------------------------------------------------------
 	//SETTERS
@@ -486,5 +517,25 @@ public class DrawComp extends JComponent{
 	
 	public void setDrawWithDensity(boolean drawWithDensity){
 		this.drawWithDensity = drawWithDensity;
+	}
+	
+	public void setColorForeground(Color c) {
+		this.colorForeground = c;
+	}
+	
+	public void setColorMidground(Color c) {
+		this.colorMidground = c;
+	}
+	
+	public void setColorBackground(Color c) {
+		this.colorBackground = c;
+	}
+	
+	public void setDrawBodyInfoTags(boolean drawBodyInfoTags) {
+		this.drawBodyInfoTags = drawBodyInfoTags;
+	}
+	
+	public void setDrawFocusPoints(boolean drawFocusPoints) {
+		this.drawFocusPoints = drawFocusPoints;
 	}
 }
