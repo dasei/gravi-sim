@@ -95,7 +95,6 @@ public class DrawComp extends JComponent{
 		
 		drawEllipseWithFocusPoints(g2, drawFocusPoints);
 		
-		
 		//draw bodies /w infotags
 		int radiusPix;
 		if(bodies != null){
@@ -103,15 +102,19 @@ public class DrawComp extends JComponent{
 			
 			if(drawWithDensity)
 				for(Body b : bodies) {
+					if(!isBodyVisibleOnScreen(b, (int)(b.radiusMeters / this.pxInMeters)))
+						continue;
 					radiusPix = (int) (b.radiusMeters / this.pxInMeters);
 					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 				}
-			else
+			else {
+				radiusPix = 5;
 				for(Body b : bodies) {
-					radiusPix = 5;
+					if(!isBodyVisibleOnScreen(b, radiusPix))
+						continue;
 					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 				}
-			
+			}
 			
 			//recalc body info tag positions
 			if(drawBodyInfoTags) {
@@ -421,6 +424,15 @@ public class DrawComp extends JComponent{
 		this.cameraOffsetXPix = (int) (this.cameraOffsetXMeters / this.pxInMeters);
 		this.cameraOffsetYPix = (int) (this.cameraOffsetYMeters / this.pxInMeters);
 	}
+	
+	private boolean isBodyVisibleOnScreen(Body body, int radiusPix) {
+		Point position = getPositionOnCoordinateSystemInPixels(body.x, body.y);
+		
+		return	position.x + radiusPix > 0 
+				&& position.x - radiusPix < this.getWidth() 
+				&& position.y + radiusPix > 0 
+				&& position.y - radiusPix < this.getHeight();   
+		}
 	
 //--------------------------------------------------------------------------------------------------
 	//MOVEMENT

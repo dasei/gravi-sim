@@ -52,10 +52,6 @@ public class WindowOptions extends JFrame{
 		this.add(pOptionContainer);
 				
 		
-		//TODO Button to start analyzation		
-		
-		//TODO (optional) Option for setting buttons on DrawComp (in)visible
-		
 		//----------------------------------------------------------------------------------------------------
 		//Option regarding bodies
 		JPanel pBodyList = new JPanel();
@@ -96,17 +92,25 @@ public class WindowOptions extends JFrame{
 		
 		//----------------------------------------------------------------------------------------------------
 		//Option for pausing and resuming simulation
-		JPanel pOptionPause = new JPanel();
-			bPauseResume = new JButton(iconPause);
-			
+		JPanel pOptionMisc = new JPanel();
+			bPauseResume = new JButton(iconPause);			
 			bPauseResume.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					Main.getController().pauseOrResume();
 					updatePauseResumeButton();
 				}
 			});
-			pOptionPause.add(bPauseResume);
-		pOptionContainer.add(pOptionPause);
+			pOptionMisc.add(bPauseResume);
+			
+			JButton bAnalyze = new JButton("analyze");
+			bAnalyze.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().startAnalyzation();
+				}
+			});
+			pOptionMisc.add(bAnalyze);
+			
+		pOptionContainer.add(pOptionMisc);
 		
 		
 		
