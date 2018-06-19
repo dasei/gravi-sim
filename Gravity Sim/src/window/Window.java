@@ -26,7 +26,7 @@ public class Window extends JFrame{
 	
 	private JButton bAnalyze;
 	
-	
+	private boolean isInFullscreenMode = false;
 //	private JComboBox<String> optTool;
 //	private String[] optToolOptions = {"Place"};
 	
@@ -59,47 +59,37 @@ public class Window extends JFrame{
 					dc.stopMouseDrag();
 			}			
 		});
+		
 		this.add(dc);
-		
-		
-//		JPanel pBottomBar = new JPanel();
-//			bPauseResume = new JButton(iconPause);
-//			
-//			bPauseResume.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					Main.getController().pauseOrResume();
-//					updatePauseResumeButton();
-//				}
-//			});
-//			pBottomBar.add(bPauseResume);
-//			
-//			bAnalyze = new JButton("Analyze");
-//			bAnalyze.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					Main.getController().startAnalyzation();
-//					updatePauseResumeButton();
-//				}
-//			});
-//			pBottomBar.add(bAnalyze);
-//			
-//			
-//			
-////			optTool = new JComboBox(optToolOptions);
-////			optTool.setSelectedItem(optToolOptions[0]);			
-////			pBottomBar.add(optTool);
-//			
-//		this.add(pBottomBar, BorderLayout.SOUTH);
-		
-		
-				
-		this.pack();
-		this.setLocationRelativeTo(null);
-		this.setVisible(true);		
+		buildJFrame(false);
 		
 		startRepaintThread();
 	}
 	
+	private void buildJFrame(boolean fullscreen){
+		
+		this.setUndecorated(fullscreen);
+		if(fullscreen){
+			setExtendedState(JFrame.MAXIMIZED_BOTH);			
+		}else{			
+			setExtendedState(JFrame.NORMAL);
+		}		
+		
+		this.pack();
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+	}
 	
+	public void switchFullscreen(){
+		if(!isInFullscreenMode){
+			this.isInFullscreenMode = true;
+		}else{
+			this.isInFullscreenMode = false;		
+		}
+		this.setVisible(false);
+		this.dispose();
+		buildJFrame(this.isInFullscreenMode);
+	}
 	
 	private void startRepaintThread() {
 		(new Thread() {

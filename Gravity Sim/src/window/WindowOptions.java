@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 
 import main.Main;
@@ -34,7 +35,8 @@ public class WindowOptions extends JFrame{
 	private ImageIcon iconPause;
 	private ImageIcon iconResume;
 	
-	
+	//pOptionSpeed
+	private JSlider sliderSimulationSpeed;
 	
 	public WindowOptions() {
 		loadIcons();
@@ -45,6 +47,12 @@ public class WindowOptions extends JFrame{
 		//utility components
 		JLabel lUtilitySeperator = new JLabel("||");		
 		
+		//TODO improve ellipse analyzation algorithm (reset after finish) 
+		//TODO add gifs
+		//TODO add stars
+		//TODO add checkbox to draw Ellipse or not
+		//TODO add scalable InfoTags via JSlider
+		//TODO geschwindigkeit via jslider einstellen
 		
 		//main option container
 		pOptionContainer = new JPanel();
@@ -93,14 +101,6 @@ public class WindowOptions extends JFrame{
 		//----------------------------------------------------------------------------------------------------
 		//Option for pausing and resuming simulation
 		JPanel pOptionMisc = new JPanel();
-			bPauseResume = new JButton(iconPause);			
-			bPauseResume.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Main.getController().pauseOrResume();
-					updatePauseResumeButton();
-				}
-			});
-			pOptionMisc.add(bPauseResume);
 			
 			JButton bAnalyze = new JButton("analyze");
 			bAnalyze.addActionListener(new ActionListener() {
@@ -208,7 +208,22 @@ public class WindowOptions extends JFrame{
 			});
 			pOptionColorPresets.add(bColorPresetRed);
 		pOptionContainer.add(pOptionColorPresets);
-		
+
+		JPanel pOptionSpeed = new JPanel();		
+			bPauseResume = new JButton(iconPause);			
+			bPauseResume.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().pauseOrResume();
+					updatePauseResumeButton();
+				}
+			});
+			pOptionSpeed.add(bPauseResume);
+			
+			sliderSimulationSpeed = new JSlider(JSlider.HORIZONTAL, 1000, 10, 0);
+				//TODO
+			pOptionSpeed.add(sliderSimulationSpeed);
+			
+		pOptionContainer.add(pOptionSpeed);
 		
 		//----------------------------------------------------------------------------------------------------
 		//Option for checkboxes

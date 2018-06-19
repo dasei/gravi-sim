@@ -26,6 +26,12 @@ public class EventManager implements KeyListener{
 		case KeyEvent.VK_F1:
 			Main.getController().getWindowOptions().setVisible(true);
 			break;
+		case KeyEvent.VK_F11:
+			Main.getController().getWindow().switchFullscreen();
+			break;
+//		case KeyEvent.VK_F10:			
+//			Main.getController().getWindow().setUn();
+//			break;
 		}		
 	}
 	public void keyReleased(KeyEvent e) {}

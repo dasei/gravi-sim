@@ -118,7 +118,6 @@ public class Controller {
 //--------------------------------------------------------------------------------------------------
 	//FOLLOW MODE
 	public void follow(Body body) {
-		//TODO all
 		this.bodyToFollow = body;
 	}
 	
