@@ -16,7 +16,8 @@ public class Controller {
 	
 	private ArrayList<Body> bodies;
 	
-	private double timeMdklSIterationSeconds = 0.1;
+	public static final double defaultTimeMdklSDelta = 0.1;
+	private double timeMdklSIterationSeconds = defaultTimeMdklSDelta;
 	private long timeLoopSleepMS = 0;
 	
 	private SimulationState state = SimulationState.SIMULATING;
@@ -126,6 +127,10 @@ public class Controller {
 	
 	private void setSimulationState(SimulationState state) {
 		this.state = state;		
+	}
+	
+	public void setMdklSDelta(double delta) {
+		this.timeMdklSIterationSeconds = delta;
 	}
 	
 //--------------------------------------------------------------------------------------------------

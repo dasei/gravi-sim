@@ -15,6 +15,11 @@ public class EventManager implements KeyListener{
 		Main.getController().getWindowOptions().onAnalyzationFinish();
 	}
 	
+	public static void onOptionWindowMdklSChange() {
+		Main.getController().setMdklSDelta(Main.getController().getWindowOptions().getSelectedMdklSDelta());
+		Main.getController().getWindowOptions().updateLMdklSDelta();
+	}
+	
 	
 	//KeyListener
 	

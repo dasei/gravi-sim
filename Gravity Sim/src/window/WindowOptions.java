@@ -16,9 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 
+import events.EventManager;
+import main.Controller;
 import main.Main;
 import physics.Body;
 
@@ -36,16 +37,20 @@ public class WindowOptions extends JFrame{
 	private ImageIcon iconResume;
 	
 	//pOptionSpeed
-	private JSlider sliderSimulationSpeed;
+//	private JSlider sliderSimulationSpeed;
+	private JLabel lMdklSDelta;
+	private double valueMdklSDelta = Controller.defaultTimeMdklSDelta;
+//	private final int sliderSimulationSpeedMaximumMin = 10;
+//	private final int sliderSimulationSpeedMaximumMax = 1000;
 	
 	public WindowOptions() {
 		loadIcons();
 		
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		this.setTitle("Gravitos Options");		
+		this.setTitle("Gravitos Options");
 		
 		//utility components
-		JLabel lUtilitySeperator = new JLabel("||");		
+				
 		
 		//TODO improve ellipse analyzation algorithm (reset after finish) 
 		//TODO add gifs
@@ -118,7 +123,7 @@ public class WindowOptions extends JFrame{
 		//----------------------------------------------------------------------------------------------------
 		//Option regarding colors of DrawComp
 		JPanel pOptionColor = new JPanel();
-			JLabel lOptionColor = new JLabel("ColorsColor:");
+			JLabel lOptionColor = new JLabel("Colors:");
 			pOptionColor.add(lOptionColor);
 		
 			JButton bOptionColorReset = new JButton("reset");
@@ -129,7 +134,7 @@ public class WindowOptions extends JFrame{
 			});
 			pOptionColor.add(bOptionColorReset);
 			
-			pOptionColor.add(lUtilitySeperator);
+			pOptionColor.add(getUtilityLabelSpacer());
 			
 			//Background
 			JButton bColorChooserBackground = new JButton("Background");
@@ -173,7 +178,7 @@ public class WindowOptions extends JFrame{
 							"background: " + dc.getColorBackground().getRed() + ", " + dc.getColorBackground().getGreen() + ", " + dc.getColorBackground().getBlue() + "\n"
 							+ "midground: " + dc.getColorMidground().getRed() + ", " + dc.getColorMidground().getGreen() + ", " + dc.getColorMidground().getBlue() + "\n"
 							+ "foreground: " + dc.getColorForeground().getRed() + ", " + dc.getColorForeground().getGreen() + ", " + dc.getColorForeground().getBlue() + "\n",
-						"rgb values", JOptionPane.INFORMATION_MESSAGE);					
+						"rgb values", JOptionPane.INFORMATION_MESSAGE);
 				}
 			});
 			pOptionColor.add(bColorChooserPrintValues);
@@ -209,7 +214,7 @@ public class WindowOptions extends JFrame{
 			pOptionColorPresets.add(bColorPresetRed);
 		pOptionContainer.add(pOptionColorPresets);
 
-		JPanel pOptionSpeed = new JPanel();		
+		JPanel pOptionSpeedMain = new JPanel();
 			bPauseResume = new JButton(iconPause);			
 			bPauseResume.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -217,11 +222,78 @@ public class WindowOptions extends JFrame{
 					updatePauseResumeButton();
 				}
 			});
-			pOptionSpeed.add(bPauseResume);
+			pOptionSpeedMain.add(bPauseResume);
 			
-			sliderSimulationSpeed = new JSlider(JSlider.HORIZONTAL, 1000, 10, 0);
-				//TODO
-			pOptionSpeed.add(sliderSimulationSpeed);
+//			lSimulationSpeed = new JLabel("speed");
+//			pOptionSpeedMain.add(lSimulationSpeed);
+		pOptionContainer.add(pOptionSpeedMain);
+		
+		
+		JPanel pOptionSpeed = new JPanel();		
+			
+			//speed control			
+			JButton bSliderSimulationSpeedPlus = new JButton("+");
+			bSliderSimulationSpeedPlus.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					changeValueMdklS(true);
+					EventManager.onOptionWindowMdklSChange();
+				}
+			});
+			pOptionSpeed.add(bSliderSimulationSpeedPlus);
+//			bSliderSimulationSpeedPlus.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					
+//					System.out.println(sliderSimulationSpeed.getMajorTickSpacing());
+//					
+//					sliderSimulationSpeed.setMaximum(sliderSimulationSpeed.getMaximum()*10);
+//					
+//					sliderSimulationSpeed.setLabelTable(null);
+//					sliderSimulationSpeed.setMinorTickSpacing(sliderSimulationSpeed.getMinorTickSpacing()*10);
+//					sliderSimulationSpeed.setMajorTickSpacing(sliderSimulationSpeed.getMajorTickSpacing()*10);
+//					
+//					EventManager.onOptionWindowSimulationSpeedChange();
+//				}
+//			});
+//			
+			lMdklSDelta = new JLabel(Controller.defaultTimeMdklSDelta + " s");
+			pOptionSpeed.add(lMdklSDelta);
+			
+//			sliderSimulationSpeed = new JSlider(JSlider.HORIZONTAL, 0, 10, 5);
+////			sliderSimulationSpeed.setMinorTickSpacing(1);
+//			sliderSimulationSpeed.setMajorTickSpacing(5);
+//			sliderSimulationSpeed.setPaintTicks(true);
+//			sliderSimulationSpeed.setPaintLabels(true);
+////			sliderSimulationSpeed.setSnapToTicks(true);
+//			sliderSimulationSpeed.addChangeListener(new ChangeListener() {
+//				public void stateChanged(ChangeEvent e) {
+//					EventManager.onOptionWindowSimulationSpeedChange();
+//				}
+//			});
+//			pOptionSpeed.add(sliderSimulationSpeed);
+//			
+			JButton bSliderSimulationSpeedMinus = new JButton("-");
+			bSliderSimulationSpeedMinus.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					changeValueMdklS(false);
+					EventManager.onOptionWindowMdklSChange();
+				}
+			});
+			pOptionSpeed.add(bSliderSimulationSpeedMinus);
+//			bSliderSimulationSpeedMinus.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					if(sliderSimulationSpeed.getMaximum() <= 10)						
+//						return;
+//					
+//					System.out.println("woop");
+//					sliderSimulationSpeed.setMaximum(sliderSimulationSpeed.getMaximum()/10);
+//					
+//					sliderSimulationSpeed.setLabelTable(null);
+//					sliderSimulationSpeed.setMinorTickSpacing(sliderSimulationSpeed.getMinorTickSpacing()/10);
+//					sliderSimulationSpeed.setMajorTickSpacing(sliderSimulationSpeed.getMajorTickSpacing()/10);
+//					
+//					EventManager.onOptionWindowSimulationSpeedChange();
+//				}
+//			});
 			
 		pOptionContainer.add(pOptionSpeed);
 		
@@ -254,6 +326,16 @@ public class WindowOptions extends JFrame{
 		this.setVisible(false);		
 	}
 	
+	private JLabel getUtilityLabelSpacer() {
+		return new JLabel("    ||    ");
+	}
+	
+	private void changeValueMdklS(boolean increase) {
+		int change = increase ? 1 : -1;
+		
+		this.valueMdklSDelta = Math.pow(10, Math.log10(this.valueMdklSDelta) + change);
+	}
+	
 	private void addOptionButton(String name, ActionListener actionListener) {
 		JButton button = new JButton(name);
 		button.addActionListener(actionListener);
@@ -268,6 +350,10 @@ public class WindowOptions extends JFrame{
 	
 	//----------------------------------------------------
 	// Update methods
+	
+	public void updateLMdklSDelta() {
+		this.lMdklSDelta.setText(this.valueMdklSDelta + " s");
+	}
 	
 	public void onAnalyzationFinish() {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -306,5 +392,12 @@ public class WindowOptions extends JFrame{
 			break;
 		}
 	}	
+	
+//--------------------------------------------------------------------------------------------------
+	//GETTERS
+		
+	public double getSelectedMdklSDelta() {
+		return valueMdklSDelta;
+	}
 	
 }
