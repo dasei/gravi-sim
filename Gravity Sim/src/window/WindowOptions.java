@@ -50,11 +50,9 @@ public class WindowOptions extends JFrame{
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.setTitle("Gravitos Options");
 		
-		//utility components
 				
 		//TODO improve ellipse analyzation algorithm (reset after finish)
 		//TODO add stars
-		//TODO add checkbox to draw Ellipse or not		
 		
 		//TODO add counter for time that has passes (in simulation)
 		//TODO   - add button to reset that time
@@ -76,7 +74,7 @@ public class WindowOptions extends JFrame{
 			pBodyList.add(boxBodyList);
 			
 			JButton bBodyListCenterOn = new JButton("\\/");
-			bBodyListCenterOn.addActionListener(new ActionListener() {				
+			bBodyListCenterOn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					Main.getController().getWindow().getDrawComp()
 						.centerCamera(
@@ -356,6 +354,14 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pOptionCheckboxes1.add(checkboxOptionDrawBodyOutline);
+			
+			JCheckBox checkboxOptionDrawEllipse = new JCheckBox("Ellipse", DrawComp.drawEllipseOnDefault);
+			checkboxOptionDrawEllipse.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setDrawEllipse(checkboxOptionDrawEllipse.isSelected());
+				}
+			});
+			pOptionCheckboxes1.add(checkboxOptionDrawEllipse);
 		pOptionContainer.add(pOptionCheckboxes1);
 		
 		

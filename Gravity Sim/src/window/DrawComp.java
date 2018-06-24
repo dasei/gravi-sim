@@ -60,7 +60,9 @@ public class DrawComp extends JComponent{
 	private boolean drawGIFs = drawGIFsOnDefault;
 	public static final boolean drawBodyOutlineOnDefault = true;
 	private boolean drawBodyOutline = drawBodyOutlineOnDefault;
-
+	public static final boolean drawEllipseOnDefault = true;
+	private boolean drawEllipse = drawEllipseOnDefault;
+	
 	public static final float defaultDrawObjectScaleFactor = 1;
 	private float drawObjectScaleFactor = defaultDrawObjectScaleFactor;
 	public static final float defaultDrawInfoTagScaleFactor = 1;
@@ -117,8 +119,7 @@ public class DrawComp extends JComponent{
 		g2.setColor(colorBackground);
 		g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 		
-		
-		drawEllipseWithFocusPoints(g2, drawFocusPoints);
+		drawEllipseWithFocusPoints(g2);
 		
 		//draw bodies /w infotags
 		int radiusPix;
@@ -201,7 +202,10 @@ public class DrawComp extends JComponent{
 			}
 	}
 	
-	private void drawEllipseWithFocusPoints(Graphics2D g2, boolean drawFocusPoints) {
+	private void drawEllipseWithFocusPoints(Graphics2D g2) {
+		if(!drawEllipse && !drawFocusPoints)
+			return;
+		
 		AnalazysResult analazysResult = Main.getController().getAnalazysResult();
 		
 		if(analazysResult == null)
@@ -228,7 +232,9 @@ public class DrawComp extends JComponent{
 			g2.fillRect((int) (centerX + xB2) - 1, (int) (centerY - yB2) - 1, 3, 3);
 		}
 
-		drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, centerX, centerY);
+		if(drawEllipse) {
+			drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, centerX, centerY);
+		}
 	}
 	
 	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double centerX, double centerY) {
@@ -650,5 +656,9 @@ public class DrawComp extends JComponent{
 	
 	public void setDrawEllipseThickness(int drawEllipseThickness) {
 		this.drawEllipseStroke = new BasicStroke(drawEllipseThickness);
+	}
+	
+	public void setDrawEllipse(boolean drawEllipse) {
+		this.drawEllipse = drawEllipse;
 	}
 }
