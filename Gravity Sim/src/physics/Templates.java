@@ -19,6 +19,7 @@ public class Templates {
 		//bodies.add(new Body(MASS_EARTH, 0, -150E9, -19000, 0, false, "Erde", DENSITY_EARTH));
 		
 		Body sun = new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN);
+		sun.setGIF("res/gifs/sun3GOOD.gif", -0.5f);
 		Body earth = new Body(sun, true, true, MASS_EARTH, 0, -150E9, 29000, 0, false, "Erde", DENSITY_EARTH);
 		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 1023, false, "Mond", DENSITY_MOON);
 //		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 700, false, "Mond", DENSITY_MOON);

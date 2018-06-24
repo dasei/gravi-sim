@@ -1,5 +1,9 @@
 package physics;
 
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
 import main.Main;
 
 public class Body {
@@ -27,6 +31,10 @@ public class Body {
 	private String name;
 	
 	private long id = Main.getNewID();
+	
+	private String gifUrl;
+	private Image gif;
+	private float gifPadding = 0;
 	
 //	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
 //		
@@ -149,6 +157,33 @@ public class Body {
 			+ ", y: " + this.y 
 			+ ", speedX: " + this.vx
 			+ ", speedY: " + this.vy;
+	}
+	
+	public void setGIF(String url, float paddingPercentage) {
+		this.gifUrl = url;
+		this.gifPadding = paddingPercentage;
+	}
+	
+	public Image getGIF() {
+		if(gif == null && gifUrl != null)
+//			try {
+			gif = new ImageIcon(gifUrl).getImage();
+//			} catch ( exc) {			
+//				exc.printStackTrace();
+//			}
+		return gif;
+	}
+	
+	/**
+	 * @param percentage specifies gap between gif and body oval
+	 * if negative, gif will be bigger than oval
+	 */
+	public void setGIFPadding(float percentage) {
+		this.gifPadding = percentage;
+	}
+	
+	public float getGIFPadding() {
+		return this.gifPadding;
 	}
 	
 	public void setName(String name) {

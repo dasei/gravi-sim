@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import events.EventManager;
@@ -51,13 +52,14 @@ public class WindowOptions extends JFrame{
 		
 		//utility components
 				
-		
-		//TODO improve ellipse analyzation algorithm (reset after finish) 
-		//TODO add gifs
+		//TODO improve ellipse analyzation algorithm (reset after finish)
 		//TODO add stars
-		//TODO add checkbox to draw Ellipse or not
-		//TODO add scalable InfoTags via JSlider
-		//TODO geschwindigkeit via jslider einstellen
+		//TODO add checkbox to draw Ellipse or not		
+		
+		//TODO add counter for time that has passes (in simulation)
+		//TODO   - add button to reset that time
+		//TODO   - display that counter on DrawComp? --> checkbox
+		
 		
 		//main option container
 		pOptionContainer = new JPanel();
@@ -214,6 +216,64 @@ public class WindowOptions extends JFrame{
 			pOptionColorPresets.add(bColorPresetRed);
 		pOptionContainer.add(pOptionColorPresets);
 
+		JPanel pOptionGraphics = new JPanel();
+		
+			pOptionGraphics.add(new JLabel("Graphical Object Scale:"));
+		
+			JTextField txtDrawObjectScaleFactor = new JTextField(4);
+			txtDrawObjectScaleFactor.setText(DrawComp.defaultDrawObjectScaleFactor + "");
+			txtDrawObjectScaleFactor.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try{
+						float factor = Float.parseFloat(txtDrawObjectScaleFactor.getText().replaceAll(",", "."));
+						
+						Main.getController().getWindow().getDrawComp().setDrawObjectScaleFactor(
+								factor >= 0 ? factor : -factor
+							);
+					}catch(NumberFormatException exc) {}
+				}
+			});
+			pOptionGraphics.add(txtDrawObjectScaleFactor);
+			
+			
+			
+			pOptionGraphics.add(new JLabel("Info Tag Scale:"));
+			
+			JTextField txtDrawInfoTagScale = new JTextField(4);
+			txtDrawInfoTagScale.setText(DrawComp.defaultDrawInfoTagScaleFactor + "");
+			txtDrawInfoTagScale.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try{
+						float factor = Float.parseFloat(txtDrawInfoTagScale.getText().replaceAll(",", "."));
+						
+						Main.getController().getWindow().getDrawComp().setDrawInfoTagScaleFactor(
+								factor >= 0 ? factor : -factor
+							);
+					}catch(NumberFormatException exc) {}
+				}
+			});
+			pOptionGraphics.add(txtDrawInfoTagScale);
+			
+			
+			
+			pOptionGraphics.add(new JLabel("Ellipse Thickness:"));
+			
+			JTextField txtDrawEllipseThickness = new JTextField(3);
+			txtDrawEllipseThickness.setText(DrawComp.defaultDrawEllipseThickness + "");
+			txtDrawEllipseThickness.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try{
+						int thickness = Integer.parseInt(txtDrawEllipseThickness.getText().replaceAll(",", "."));
+						
+						Main.getController().getWindow().getDrawComp().setDrawEllipseThickness(
+								thickness >= 0 ? thickness : -thickness
+							);
+					}catch(NumberFormatException exc) {}
+				}
+			});
+			pOptionGraphics.add(txtDrawEllipseThickness);
+		pOptionContainer.add(pOptionGraphics);
+		
 		JPanel pOptionSpeedMain = new JPanel();
 			bPauseResume = new JButton(iconPause);			
 			bPauseResume.addActionListener(new ActionListener() {
@@ -240,37 +300,10 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pOptionSpeed.add(bSliderSimulationSpeedPlus);
-//			bSliderSimulationSpeedPlus.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					
-//					System.out.println(sliderSimulationSpeed.getMajorTickSpacing());
-//					
-//					sliderSimulationSpeed.setMaximum(sliderSimulationSpeed.getMaximum()*10);
-//					
-//					sliderSimulationSpeed.setLabelTable(null);
-//					sliderSimulationSpeed.setMinorTickSpacing(sliderSimulationSpeed.getMinorTickSpacing()*10);
-//					sliderSimulationSpeed.setMajorTickSpacing(sliderSimulationSpeed.getMajorTickSpacing()*10);
-//					
-//					EventManager.onOptionWindowSimulationSpeedChange();
-//				}
-//			});
-//			
+			
 			lMdklSDelta = new JLabel(Controller.defaultTimeMdklSDelta + " s");
 			pOptionSpeed.add(lMdklSDelta);
 			
-//			sliderSimulationSpeed = new JSlider(JSlider.HORIZONTAL, 0, 10, 5);
-////			sliderSimulationSpeed.setMinorTickSpacing(1);
-//			sliderSimulationSpeed.setMajorTickSpacing(5);
-//			sliderSimulationSpeed.setPaintTicks(true);
-//			sliderSimulationSpeed.setPaintLabels(true);
-////			sliderSimulationSpeed.setSnapToTicks(true);
-//			sliderSimulationSpeed.addChangeListener(new ChangeListener() {
-//				public void stateChanged(ChangeEvent e) {
-//					EventManager.onOptionWindowSimulationSpeedChange();
-//				}
-//			});
-//			pOptionSpeed.add(sliderSimulationSpeed);
-//			
 			JButton bSliderSimulationSpeedMinus = new JButton("-");
 			bSliderSimulationSpeedMinus.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -279,22 +312,6 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pOptionSpeed.add(bSliderSimulationSpeedMinus);
-//			bSliderSimulationSpeedMinus.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					if(sliderSimulationSpeed.getMaximum() <= 10)						
-//						return;
-//					
-//					System.out.println("woop");
-//					sliderSimulationSpeed.setMaximum(sliderSimulationSpeed.getMaximum()/10);
-//					
-//					sliderSimulationSpeed.setLabelTable(null);
-//					sliderSimulationSpeed.setMinorTickSpacing(sliderSimulationSpeed.getMinorTickSpacing()/10);
-//					sliderSimulationSpeed.setMajorTickSpacing(sliderSimulationSpeed.getMajorTickSpacing()/10);
-//					
-//					EventManager.onOptionWindowSimulationSpeedChange();
-//				}
-//			});
-			
 		pOptionContainer.add(pOptionSpeed);
 		
 		//----------------------------------------------------------------------------------------------------
@@ -315,6 +332,30 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pOptionCheckboxes1.add(checkboxOptionDrawEllipseFocusPoints);
+			
+			JCheckBox checkboxOptionDrawGIFs = new JCheckBox("GIFs", DrawComp.drawGIFsOnDefault);
+			checkboxOptionDrawGIFs.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setDrawGIFs(checkboxOptionDrawGIFs.isSelected());
+				}
+			});
+			pOptionCheckboxes1.add(checkboxOptionDrawGIFs);
+			
+			JCheckBox checkboxOptionDrawWithDensity = new JCheckBox("Density", DrawComp.drawWithDensityOnDefault);
+			checkboxOptionDrawWithDensity.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setDrawWithDensity(checkboxOptionDrawWithDensity.isSelected());
+				}
+			});
+			pOptionCheckboxes1.add(checkboxOptionDrawWithDensity);
+			
+			JCheckBox checkboxOptionDrawBodyOutline = new JCheckBox("Outline", DrawComp.drawBodyOutlineOnDefault);
+			checkboxOptionDrawBodyOutline.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setDrawBodyOutline(checkboxOptionDrawBodyOutline.isSelected());
+				}
+			});
+			pOptionCheckboxes1.add(checkboxOptionDrawBodyOutline);
 		pOptionContainer.add(pOptionCheckboxes1);
 		
 		
@@ -345,7 +386,7 @@ public class WindowOptions extends JFrame{
 	
 	private void loadIcons() {
 		iconPause = new ImageIcon("res/icons/icon_pause.png", "pause");
-		iconResume = new ImageIcon("res/icons/icon_resume.png", "resume");		
+		iconResume = new ImageIcon("res/icons/icon_resume.png", "resume");
 	}
 	
 	//----------------------------------------------------

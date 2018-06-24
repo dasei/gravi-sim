@@ -1,5 +1,7 @@
 package window;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -52,21 +54,44 @@ public class DrawComp extends JComponent{
 	private boolean drawBodyInfoTags = drawBodyInfoTagsOnDefault;
 	public static final boolean drawFocusPointsOnDefault = true;
 	private boolean drawFocusPoints = drawFocusPointsOnDefault;
-	private boolean drawWithDensity = true;
+	public static final boolean drawWithDensityOnDefault = true;
+	private boolean drawWithDensity = drawWithDensityOnDefault;
+	public static final boolean drawGIFsOnDefault = true;
+	private boolean drawGIFs = drawGIFsOnDefault;
+	public static final boolean drawBodyOutlineOnDefault = true;
+	private boolean drawBodyOutline = drawBodyOutlineOnDefault;
+
+	public static final float defaultDrawObjectScaleFactor = 1;
+	private float drawObjectScaleFactor = defaultDrawObjectScaleFactor;
+	public static final float defaultDrawInfoTagScaleFactor = 1;
+	private float drawInfoTagScaleFactor = defaultDrawInfoTagScaleFactor;
+	public static final int defaultDrawEllipseThickness = 1;
+	private BasicStroke drawEllipseStroke = new BasicStroke(defaultDrawEllipseThickness);
+	
+	public static final BasicStroke defaultStroke = new BasicStroke(1);
 	
 	private Controller controller;
 	
 	private final ColorPreset defaultColorPreset = ColorPreset.DARK;
 	private Color colorBackground;
 	private Color colorMidground;
-	private Color colorForeground;	
+	private Color colorForeground;
+	
+	public static final int FPSMAX = 60;
+	private long tmpTimeStart;
+	
+	public static final Font fontScaleDefault = new Font("Dialog", Font.PLAIN, 12);
+	public static final Font fontInfoTagsDefault = new Font("Dialog", Font.PLAIN, 12);
+	private Font fontInfoTags = fontInfoTagsDefault;
 	
 	public DrawComp() {
 		this.setOpaque(true);
 		loadColorPreset(defaultColorPreset);		
 	}
 	
-	public void paintComponent(Graphics g) {	
+	public void paintComponent(Graphics g) {
+		tmpTimeStart = System.currentTimeMillis();
+		
 		if(!shouldRepaint)
 			return;
 		Graphics2D g2 = (Graphics2D) g;
@@ -100,24 +125,58 @@ public class DrawComp extends JComponent{
 		if(bodies != null){
 			g2.setColor(colorForeground);
 			
-			if(drawWithDensity)
+			if(drawWithDensity) {
+				float radiusWithPaddingPix;
 				for(Body b : bodies) {
-					if(!isBodyVisibleOnScreen(b, (int)(b.radiusMeters / this.pxInMeters)))
+					radiusPix = (int) ((b.radiusMeters / this.pxInMeters) * this.drawObjectScaleFactor);
+					if(!isBodyVisibleOnScreen(b, radiusPix))
 						continue;
-					radiusPix = (int) (b.radiusMeters / this.pxInMeters);
-					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+					
+					if(this.drawGIFs && b.getGIF() != null) {
+						radiusWithPaddingPix = (1 - b.getGIFPadding()) * radiusPix;
+						if(radiusWithPaddingPix > 2) {					
+							g2.drawImage(
+									b.getGIF(), 
+									(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
+									(int) (cameraOffsetYPix + (b.y/pxInMeters) - (radiusWithPaddingPix)), 
+									(int) (radiusWithPaddingPix * 2) + 1,
+									(int) (radiusWithPaddingPix * 2) + 1,
+									null);
+						}
+					}
+					
+					if(this.drawBodyOutline)
+						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 				}
-			else {
-				radiusPix = 5;
+			}else {
+				radiusPix = (int)(5 * this.drawObjectScaleFactor);
+				float radiusWithPaddingPix;
 				for(Body b : bodies) {
 					if(!isBodyVisibleOnScreen(b, radiusPix))
 						continue;
-					g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+					
+					if(this.drawGIFs && b.getGIF() != null) {
+						radiusWithPaddingPix = (1 - b.getGIFPadding()) * radiusPix;
+											
+						g2.drawImage(
+								b.getGIF(), 
+								(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
+								(int) (cameraOffsetYPix + (b.y/pxInMeters) - (radiusWithPaddingPix)), 
+								(int) (radiusWithPaddingPix * 2) + 1,
+								(int) (radiusWithPaddingPix * 2) + 1,
+								null);
+					}
+					
+					if(this.drawBodyOutline)
+						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 				}
 			}
 			
 			//recalc body info tag positions
 			if(drawBodyInfoTags) {
+				//TODO only re instantiate font if this.drawInfoTagScaleFactor has changed since last draw				
+				fontInfoTags = new Font( fontInfoTagsDefault.getName(), fontInfoTagsDefault.getStyle(), (int) (fontInfoTagsDefault.getSize() * this.drawInfoTagScaleFactor));
+				
 				recalcBodyInfoTags(g, bodies);
 				drawBodyInfoTags(g, bodies);
 			}
@@ -131,6 +190,15 @@ public class DrawComp extends JComponent{
 		// => max-/ minimizing the window will not be noticed by a ComponentListener 
 		lastWidth = this.getWidth();
 		lastHeight = this.getHeight();
+		
+		
+		//wait, so that MAXFPS wont be overstepped
+		long tmpTimeTaken = System.currentTimeMillis() - tmpTimeStart;
+		if(tmpTimeTaken < 1000/FPSMAX)
+			try {
+				Thread.sleep(1000/FPSMAX - tmpTimeTaken);
+			}catch(Exception e) {
+			}
 	}
 	
 	private void drawEllipseWithFocusPoints(Graphics2D g2, boolean drawFocusPoints) {
@@ -164,6 +232,9 @@ public class DrawComp extends JComponent{
 	}
 	
 	private void drawEllipse(Graphics2D g2, double aPix, double bPix, double degreeRadians, Body bodyCenter, double centerX, double centerY) {
+		
+		//width of ellipse
+		g2.setStroke(drawEllipseStroke);
 		
 		g2.setColor(colorMidground);
 		
@@ -238,6 +309,9 @@ public class DrawComp extends JComponent{
 	    	}
 	    }
 	    g2.drawLine(pointCacheX, pointCacheY, pointStartX, pointStartY);
+	    
+	    //reset stroke
+	    g2.setStroke(defaultStroke);
 	}
 
 	/**
@@ -245,7 +319,9 @@ public class DrawComp extends JComponent{
 	 */
 	private void recalcBodyInfoTags(Graphics g, ArrayList<Body> bodies){
 		
-		Point bodyPos;				
+		g.setFont(fontInfoTags);
+		
+		Point bodyPos;
 		for(Body body : bodies){
 			
 			//get Position of body
@@ -261,15 +337,19 @@ public class DrawComp extends JComponent{
 	
 	private void drawBodyInfoTags(Graphics g, ArrayList<Body> bodies){
 		
+		g.setFont(fontInfoTags);
 		
 		for(Body body : bodies){
+			//Background (background rectangle)
 			g.setColor(colorBackground);
 			g.fillRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
-			g.setColor(colorMidground);			
-			g.drawRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
-			g.drawLine(body.infoTagXPix, body.infoTagYPix, body.infoTagXPix + 10, body.infoTagYPix + 10);
+			
+			//Midground (text, line and border)
+			g.setColor(colorMidground);
 			g.drawString(body.getName(), body.infoTagXPix + 10 + 2, body.infoTagYPix + 10 + body.infoTagFontSize);
-		}		
+			g.drawLine(body.infoTagXPix, body.infoTagYPix, body.infoTagXPix + 10, body.infoTagYPix + 10);
+			g.drawRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
+		}
 	}
 	
 	private final int scaleOffsetX = 50;
@@ -364,10 +444,11 @@ public class DrawComp extends JComponent{
 		if(scaleText == null)
 			recalcScale(g2);
 		
-		g2.setColor(Color.DARK_GRAY);
-		
+		g2.setColor(Color.DARK_GRAY);		
 		g2.drawRect(this.getWidth() - scaleOffsetX - (int) this.scaleLengthPix, this.getHeight() - scaleOffsetY - this.scaleBarThickness, (int) this.scaleLengthPix, this.scaleBarThickness);
 		
+		
+		g2.setFont(fontScaleDefault);		
 		g2.drawString(
 				this.scaleText, 
 				this.getWidth() - this.scaleOffsetX - SwingUtilities.computeStringWidth(g2.getFontMetrics(), this.scaleText),
@@ -549,5 +630,25 @@ public class DrawComp extends JComponent{
 	
 	public void setDrawFocusPoints(boolean drawFocusPoints) {
 		this.drawFocusPoints = drawFocusPoints;
+	}
+	
+	public void setDrawObjectScaleFactor(float factor) {
+		this.drawObjectScaleFactor = factor;
+	}
+	
+	public void setDrawGIFs(boolean drawGIFs) {
+		this.drawGIFs = drawGIFs;
+	}
+	
+	public void setDrawBodyOutline(boolean drawBodyOutline) {
+		this.drawBodyOutline = drawBodyOutline;
+	}
+	
+	public void setDrawInfoTagScaleFactor(float drawInfoTagScaleFactor) {
+		this.drawInfoTagScaleFactor = drawInfoTagScaleFactor;
+	}
+	
+	public void setDrawEllipseThickness(int drawEllipseThickness) {
+		this.drawEllipseStroke = new BasicStroke(drawEllipseThickness);
 	}
 }

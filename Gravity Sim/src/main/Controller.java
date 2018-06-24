@@ -32,7 +32,6 @@ public class Controller {
 		
 		
 		window = new Window();
-		window.getDrawComp().setDrawWithDensity(true);
 		
 		windowOptions = new WindowOptions();
 	
@@ -65,7 +64,10 @@ public class Controller {
 //							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
 							state = SimulationState.SIMULATING;
 							EventManager.onAnalyzationFinish();
-						}
+						}else if(state == SimulationState.PAUSED)
+							try {
+								Thread.sleep(10);
+							}catch(Exception e) {}
 					}
 					
 					//sleep
@@ -81,7 +83,7 @@ public class Controller {
 			}
 		};
 		
-		new Thread(loop).start();
+		new Thread(loop, "Physics Thread").start();
 	}
 
 //--------------------------------------------------------------------------------------------------

@@ -5,8 +5,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -19,12 +17,6 @@ public class Window extends JFrame{
 	
 	//Components:
 	private DrawComp dc;
-	
-	private JButton bPauseResume;
-	private ImageIcon iconPause;
-	private ImageIcon iconResume;
-	
-	private JButton bAnalyze;
 	
 	private boolean isInFullscreenMode = false;
 //	private JComboBox<String> optTool;
@@ -94,7 +86,7 @@ public class Window extends JFrame{
 	private void startRepaintThread() {
 		(new Thread() {
 			public void run() {
-				this.setName("repaint Thread");
+				this.setName("Repaint Thread");
 				
 				Body bodyToFollow;
 				while(true) {
@@ -134,7 +126,7 @@ public class Window extends JFrame{
 //		if(!Main.getController().pause()) 
 //			return;
 //		
-//		switch((String)( optTool.getSelectedItem() )) {
+//		switch((String)( optTool.getSelectedItem() )) {  
 //		case "Place":
 //			if(!Main.getController().pause())
 //				return;
