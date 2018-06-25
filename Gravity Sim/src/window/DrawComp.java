@@ -140,8 +140,8 @@ public class DrawComp extends JComponent{
 									b.getGIF(), 
 									(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
 									(int) (cameraOffsetYPix + (b.y/pxInMeters) - (radiusWithPaddingPix)), 
-									(int) (radiusWithPaddingPix * 2) + 1,
-									(int) (radiusWithPaddingPix * 2) + 1,
+									(int) (radiusWithPaddingPix * 2) + 2,
+									(int) (radiusWithPaddingPix * 2) + 2,
 									null);
 						}
 					}
@@ -163,8 +163,8 @@ public class DrawComp extends JComponent{
 								b.getGIF(), 
 								(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
 								(int) (cameraOffsetYPix + (b.y/pxInMeters) - (radiusWithPaddingPix)), 
-								(int) (radiusWithPaddingPix * 2) + 1,
-								(int) (radiusWithPaddingPix * 2) + 1,
+								(int) (radiusWithPaddingPix * 2) + 2,
+								(int) (radiusWithPaddingPix * 2) + 2,
 								null);
 					}
 					
