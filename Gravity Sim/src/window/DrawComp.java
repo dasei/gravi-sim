@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
@@ -24,7 +27,7 @@ public class DrawComp extends JComponent{
 	public static enum ColorPreset{
 		LIGHT(new Color(255, 255, 255), new Color(96, 101, 109), new Color(0, 0, 0)), 
 		DARK(new Color(0, 0, 0), new Color(96, 101, 109), new Color(255, 255, 255)),
-		RED(new Color(0, 0, 0), new Color(96, 101, 109), new Color(209, 0, 0));
+		RED(new Color(0, 0, 0), new Color(255,255,255), new Color(209, 0, 0));
 		
 		public final Color background;
 		public final Color midground;
@@ -62,6 +65,8 @@ public class DrawComp extends JComponent{
 	private boolean drawBodyOutline = drawBodyOutlineOnDefault;
 	public static final boolean drawEllipseOnDefault = true;
 	private boolean drawEllipse = drawEllipseOnDefault;
+	public static final boolean drawBackgroundImageOnDefault = false;
+	private boolean drawBackgroundImage = drawBackgroundImageOnDefault;
 	
 	public static final float defaultDrawObjectScaleFactor = 1;
 	private float drawObjectScaleFactor = defaultDrawObjectScaleFactor;
@@ -79,6 +84,8 @@ public class DrawComp extends JComponent{
 	private Color colorMidground;
 	private Color colorForeground;
 	
+	private Image imageBackground;
+	
 	public static final int FPSMAX = 60;
 	private long tmpTimeStart;
 	
@@ -87,6 +94,13 @@ public class DrawComp extends JComponent{
 	private Font fontInfoTags = fontInfoTagsDefault;
 	
 	public DrawComp() {
+		//TODO do this modular (maybe JTextField)
+		try{
+			this.imageBackground = ImageIO.read(new File("res/background/galaxy.jpg"));
+		}catch(Exception exc){
+			exc.printStackTrace();
+		}
+		
 		this.setOpaque(true);
 		loadColorPreset(defaultColorPreset);		
 	}
@@ -116,8 +130,7 @@ public class DrawComp extends JComponent{
 		
 		
 		//draw background
-		g2.setColor(colorBackground);
-		g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+		drawBackground(g2);
 		
 		drawEllipseWithFocusPoints(g2);
 		
@@ -356,6 +369,14 @@ public class DrawComp extends JComponent{
 			g.drawLine(body.infoTagXPix, body.infoTagYPix, body.infoTagXPix + 10, body.infoTagYPix + 10);
 			g.drawRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
 		}
+	}
+	
+	private void drawBackground(Graphics2D g2){
+		if(!this.drawBackgroundImage || this.imageBackground == null){
+			g2.setColor(colorBackground);
+			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+		}else
+			g2.drawImage(imageBackground, 0, 0, null);
 	}
 	
 	private final int scaleOffsetX = 50;
@@ -660,5 +681,9 @@ public class DrawComp extends JComponent{
 	
 	public void setDrawEllipse(boolean drawEllipse) {
 		this.drawEllipse = drawEllipse;
+	}
+	
+	public void setDrawBackgroundImage(boolean drawBackgroundImage){
+		this.drawBackgroundImage = drawBackgroundImage;
 	}
 }

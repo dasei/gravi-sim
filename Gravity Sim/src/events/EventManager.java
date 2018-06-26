@@ -31,6 +31,9 @@ public class EventManager implements KeyListener{
 		case KeyEvent.VK_F1:
 			Main.getController().getWindowOptions().setVisible(true);
 			break;
+		case KeyEvent.VK_F6:
+			Main.getController().getWindowOptions().toggleBackgroundImage();
+			break;
 		case KeyEvent.VK_F11:
 			Main.getController().getWindow().switchFullscreen();
 			break;

@@ -44,6 +44,8 @@ public class WindowOptions extends JFrame{
 //	private final int sliderSimulationSpeedMaximumMin = 10;
 //	private final int sliderSimulationSpeedMaximumMax = 1000;
 	
+	private JCheckBox checkboxOptionDrawBackgroundImage;
+	
 	public WindowOptions() {
 		loadIcons();
 		
@@ -362,6 +364,14 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pOptionCheckboxes1.add(checkboxOptionDrawEllipse);
+			
+			checkboxOptionDrawBackgroundImage = new JCheckBox("BackgroundImage", DrawComp.drawBackgroundImageOnDefault);
+			checkboxOptionDrawBackgroundImage.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setDrawBackgroundImage(checkboxOptionDrawBackgroundImage.isSelected());
+				}
+			});
+			pOptionCheckboxes1.add(checkboxOptionDrawBackgroundImage);
 		pOptionContainer.add(pOptionCheckboxes1);
 		
 		
@@ -438,7 +448,11 @@ public class WindowOptions extends JFrame{
 			bPauseResume.setEnabled(false);
 			break;
 		}
-	}	
+	}
+	
+	public void toggleBackgroundImage(){
+		this.checkboxOptionDrawBackgroundImage.doClick();
+	}
 	
 //--------------------------------------------------------------------------------------------------
 	//GETTERS
