@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import events.EventManager;
 import physics.Body;
+import physics.BodySystemTemplate;
 import physics.Physics;
 import physics.Physics.AnalazysResult;
 import physics.Templates;
@@ -14,7 +15,7 @@ public class Controller {
 	private Window window;
 	private WindowOptions windowOptions;
 	
-	private ArrayList<Body> bodies;
+	private ArrayList<Body> bodies;	
 	
 	public static final double defaultTimeMdklSDelta = 0.1;
 	private double timeMdklSIterationSeconds = defaultTimeMdklSDelta;
@@ -35,7 +36,7 @@ public class Controller {
 		
 		windowOptions = new WindowOptions();
 	
-		bodies = Templates.loadSolarsystem();
+		bodies = Templates.loadSolarsystemComplete();
 		
 		
 //		for(int i = 0; i < 2000000; i++) {
@@ -126,6 +127,10 @@ public class Controller {
 	
 //--------------------------------------------------------------------------------------------------
 	//SETTERS
+	
+	public void loadBodySystemTemplates(BodySystemTemplate bodySystemTemplate){
+		this.bodies = bodySystemTemplate.getBodies();
+	}
 	
 	private void setSimulationState(SimulationState state) {
 		this.state = state;		

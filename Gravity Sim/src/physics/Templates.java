@@ -12,11 +12,8 @@ public class Templates {
 	public static final double DENSITY_EARTH = 5515;
 	public static final double DENSITY_MOON = 3341;
 	
-	public static ArrayList<Body> loadSolarsystem() {
+	public static ArrayList<Body> loadSolarsystemComplete() {
 		ArrayList<Body> bodies = new ArrayList<Body>();
-		
-		//bodies.add(new Body(1.9E30, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
-		//bodies.add(new Body(MASS_EARTH, 0, -150E9, -19000, 0, false, "Erde", DENSITY_EARTH));
 		
 		Body sun = new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN);
 		sun.setGIF("res/gifsFinal/sun.gif", -0.5f);
@@ -24,11 +21,36 @@ public class Templates {
 		earth.setGIF("res/gifsFinal/earth.png", -0.11f);
 		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 1023, false, "Mond", DENSITY_MOON);
 		moon.setGIF("res/gifsFinal/moon.png", -0.12f);
+		
+		
+		//TODO add remaining planets
+		
 //		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 700, false, "Mond", DENSITY_MOON);
 		bodies.add(sun);
 		bodies.add(earth);
 		bodies.add(moon);
 		
+		
+		return bodies;
+	}
+	
+	public static ArrayList<Body> loadSolarsystemLight(){
+		
+		ArrayList<Body> bodies = new ArrayList<Body>();
+		
+		Body sun = new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN);
+		sun.setGIF("res/gifsFinal/sun.gif", -0.5f);
+		
+		Body earth = new Body(sun, true, true, MASS_EARTH, 0, -150E9, 29000, 0, false, "Erde", DENSITY_EARTH);
+		earth.setGIF("res/gifsFinal/earth.png", -0.11f);
+		
+		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 1023, false, "Mond", DENSITY_MOON);
+//		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 700, false, "Mond", DENSITY_MOON);
+		moon.setGIF("res/gifsFinal/moon.png", -0.12f);
+		
+		bodies.add(sun);
+		bodies.add(moon);
+		bodies.add(earth);
 		
 		return bodies;
 	}

@@ -23,6 +23,7 @@ import events.EventManager;
 import main.Controller;
 import main.Main;
 import physics.Body;
+import physics.BodySystemTemplate;
 
 public class WindowOptions extends JFrame{
 	
@@ -52,6 +53,8 @@ public class WindowOptions extends JFrame{
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.setTitle("Gravitos Options");
 		
+		
+		//TODO planeten presets
 				
 		//TODO improve ellipse analyzation algorithm (reset after finish)
 		//TODO add stars
@@ -104,6 +107,17 @@ public class WindowOptions extends JFrame{
 			pBodyList.add(bBodyListStopFollow);
 		pOptionContainer.add(pBodyList);
 			
+		//----------------------------------------------------------------------------------------------------
+		//Body presets
+		JPanel pBodyPresets = new JPanel();
+			JButton bBodyPresetsSolarSystem = new JButton("Sol.Sys. Complete");
+			bBodyPresetsSolarSystem.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().loadBodySystemTemplates(BodySystemTemplate.SOLAR_SYSTEM_COMPLETE);
+				}
+			});
+			pOptionContainer.add(bBodyPresetsSolarSystem);
+		pOptionContainer.add(pBodyPresets);
 		
 		//----------------------------------------------------------------------------------------------------
 		//Option for pausing and resuming simulation

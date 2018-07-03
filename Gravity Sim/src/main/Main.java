@@ -6,7 +6,8 @@ public class Main {
 	
 	private static Controller controller;
 	
-	public static void main(String[] args){		
+	public static void main(String[] args){
+		System.out.println("running");
 		controller = new Controller();
 		
 		//initial update of body list in WindowOptions
