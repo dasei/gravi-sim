@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public enum BodySystemTemplate {
 	SOLAR_SYSTEM_COMPLETE,
-	SOLAR_SYSTEM_LIGHT
+	SOLAR_SYSTEM_LITE
 	
 	;
 	
@@ -13,8 +13,8 @@ public enum BodySystemTemplate {
 		switch(this){
 		case SOLAR_SYSTEM_COMPLETE:
 			return Templates.loadSolarsystemComplete();			
-		case SOLAR_SYSTEM_LIGHT:
-			return Templates.loadSolarsystemLight();
+		case SOLAR_SYSTEM_LITE:
+			return Templates.loadSolarsystemLite();
 		default:
 			return Templates.loadSolarsystemComplete();
 		}	

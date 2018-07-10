@@ -7,34 +7,74 @@ public class Templates {
 	public static final double MASS_SUN = 1.9E30; // Kg
 	public static final double MASS_EARTH = 5.9E24;
 	public static final double MASS_MOON = 7.349E22;
+	public static final double MASS_MARS = 6.39E23;
+	public static final double MASS_MERCURY = 3.301E23;
+	public static final double MASS_VENUS = 4.867E24;
+	public static final double MASS_JUPITER = 1.899E27;
+	public static final double MASS_SATURN = 5.685E26;
+	public static final double MASS_URANUS = 8.683E25;
+	public static final double MASS_NEPTUNE = 1.0243E26;
 	
 	public static final double DENSITY_SUN = 1408; // Kg / m³
 	public static final double DENSITY_EARTH = 5515;
 	public static final double DENSITY_MOON = 3341;
+	public static final double DENSITY_MARS = 3930;
+	public static final double DENSITY_MERCURY = 5427;
+	public static final double DENSITY_VENUS = 5243;
+	public static final double DENSITY_JUPITER = 1326;
+	public static final double DENSITY_SATURN = 687;
+	public static final double DENSITY_URANUS = 1270;
+	public static final double DENSITY_NEPTUNE = 1638;
 	
 	public static ArrayList<Body> loadSolarsystemComplete() {
 		ArrayList<Body> bodies = new ArrayList<Body>();
 		
 		Body sun = new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN);
 		sun.setGIF("res/gifsFinal/sun.gif", -0.5f);
+		
+		Body mercury = new Body(sun, true, true, MASS_MERCURY, 0, -57909000000d, 47360, 0, false, "Merkur", DENSITY_MERCURY);
+		
+		Body venus = new Body(sun, true, true, MASS_VENUS, 0, -108160000000d, 35020, 0, false, "Venus", DENSITY_VENUS);
+		
 		Body earth = new Body(sun, true, true, MASS_EARTH, 0, -150E9, 29000, 0, false, "Erde", DENSITY_EARTH);
-		earth.setGIF("res/gifsFinal/earth.png", -0.11f);
+		earth.setGIF("res/gifsFinal/earth.png", -0.11f);		
 		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 1023, false, "Mond", DENSITY_MOON);
+//		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 700, false, "Mond", DENSITY_MOON);
 		moon.setGIF("res/gifsFinal/moon.png", -0.12f);
 		
+		Body mars = new Body(sun, true, true, MASS_MARS, 0, -227900000000d, 24000, 0, false, "Mars", DENSITY_MARS);
 		
-		//TODO add remaining planets
+		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 13070, 0, false, "Jupiter", DENSITY_JUPITER);
 		
-//		Body moon = new Body(earth, true, true, MASS_MOON, 384.4E6, 0, 0, 700, false, "Mond", DENSITY_MOON);
-		bodies.add(sun);
-		bodies.add(earth);
+		Body saturn = new Body(sun, true, true, MASS_SATURN, 0, -1433500000000d, 9690, 0, false, "Saturn", DENSITY_SATURN);
+		
+		Body uranus = new Body(sun, true, true, MASS_URANUS, 0, -2872400000000d, 6810, 0, false, "Uranus", DENSITY_URANUS);
+		
+		Body neptune = new Body(sun, true, true, MASS_NEPTUNE, 0, -4498400000000d, 5430, 0, false, "Neptun", DENSITY_NEPTUNE);
+		
+		bodies.add(mercury);
+		
+		bodies.add(venus);		
+		
+		bodies.add(mars);
+		
+		bodies.add(jupiter);
+		
+		bodies.add(saturn);
+		
+		bodies.add(uranus);
+		
+		bodies.add(neptune);
+		
 		bodies.add(moon);
+		bodies.add(earth);
 		
+		bodies.add(sun);
 		
 		return bodies;
 	}
 	
-	public static ArrayList<Body> loadSolarsystemLight(){
+	public static ArrayList<Body> loadSolarsystemLite(){
 		
 		ArrayList<Body> bodies = new ArrayList<Body>();
 		

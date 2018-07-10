@@ -54,7 +54,8 @@ public class WindowOptions extends JFrame{
 		this.setTitle("Gravitos Options");
 		
 		
-		//TODO planeten presets
+		//TODO frame counter
+		//TODO punkte die relativ zur camera durch planeten erstellt werden (=> 'faden' (english))
 				
 		//TODO improve ellipse analyzation algorithm (reset after finish)
 		//TODO add stars
@@ -110,13 +111,21 @@ public class WindowOptions extends JFrame{
 		//----------------------------------------------------------------------------------------------------
 		//Body presets
 		JPanel pBodyPresets = new JPanel();
-			JButton bBodyPresetsSolarSystem = new JButton("Sol.Sys. Complete");
-			bBodyPresetsSolarSystem.addActionListener(new ActionListener(){
+			JButton bBodyPresetsSolarSystemComplete = new JButton("Sol.Sys. Lite");
+			bBodyPresetsSolarSystemComplete.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().loadBodySystemTemplates(BodySystemTemplate.SOLAR_SYSTEM_LITE);
+				}
+			});
+			pBodyPresets.add(bBodyPresetsSolarSystemComplete);
+			
+			JButton bBodyPresetsSolarSystemLite = new JButton("Sol.Sys. Complete");
+			bBodyPresetsSolarSystemLite.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e) {
 					Main.getController().loadBodySystemTemplates(BodySystemTemplate.SOLAR_SYSTEM_COMPLETE);
 				}
 			});
-			pOptionContainer.add(bBodyPresetsSolarSystem);
+			pBodyPresets.add(bBodyPresetsSolarSystemLite);
 		pOptionContainer.add(pBodyPresets);
 		
 		//----------------------------------------------------------------------------------------------------
