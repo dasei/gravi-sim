@@ -106,10 +106,11 @@ public class DrawComp extends JComponent{
 	}
 	
 	public void paintComponent(Graphics g) {
-		tmpTimeStart = System.currentTimeMillis();
-		
 		if(!shouldRepaint)
 			return;
+		
+		tmpTimeStart = System.currentTimeMillis();
+		
 		Graphics2D g2 = (Graphics2D) g;
 		
 		if(controller == null) {
@@ -132,7 +133,7 @@ public class DrawComp extends JComponent{
 		//draw background
 		drawBackground(g2);
 		
-		drawEllipseWithFocusPoints(g2);
+		
 		
 		//draw bodies /w infotags
 		int radiusPix;
@@ -142,6 +143,9 @@ public class DrawComp extends JComponent{
 			if(drawWithDensity) {
 				float radiusWithPaddingPix;
 				for(Body b : bodies) {
+					//TODO ellipse auch nur zeichnen wenn die aufm Bildschirm sichtbar is
+					drawEllipseWithFocusPoints(g2, b);
+					
 					radiusPix = (int) ((b.radiusMeters / this.pxInMeters) * this.drawObjectScaleFactor);
 					if(!isBodyVisibleOnScreen(b, radiusPix))
 						continue;
@@ -161,11 +165,14 @@ public class DrawComp extends JComponent{
 					
 					if(this.drawBodyOutline)
 						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
-				}
+				}				
 			}else {
 				radiusPix = (int)(5 * this.drawObjectScaleFactor);
 				float radiusWithPaddingPix;
 				for(Body b : bodies) {
+					//TODO ellipse auch nur zeichnen wenn die aufm Bildschirm sichtbar is
+					drawEllipseWithFocusPoints(g2, b);
+					
 					if(!isBodyVisibleOnScreen(b, radiusPix))
 						continue;
 					
@@ -182,7 +189,7 @@ public class DrawComp extends JComponent{
 					}
 					
 					if(this.drawBodyOutline)
-						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);					
 				}
 			}
 			
@@ -215,11 +222,14 @@ public class DrawComp extends JComponent{
 			}
 	}
 	
-	private void drawEllipseWithFocusPoints(Graphics2D g2) {
-		if(!drawEllipse && !drawFocusPoints)
+	private void drawEllipseWithFocusPoints(Graphics2D g2, Body bodyRotator) {
+		if(bodyRotator.getAnalysisResult() == null)
 			return;
 		
-		AnalazysResult analazysResult = Main.getController().getAnalazysResult();
+		if(!drawEllipse && !drawFocusPoints)
+			return;		
+		
+		AnalazysResult analazysResult = bodyRotator.getAnalysisResult();
 		
 		if(analazysResult == null)
 			return;
@@ -234,8 +244,8 @@ public class DrawComp extends JComponent{
 		double yB2 = Math.sin(-degreeRadians) * -eLin;
 		double xB2 = Math.cos(-degreeRadians) * -eLin;
 		
-		double centerX = cameraOffsetXPix - xB2 + (analazysResult.bodyCenter.x / this.pxInMeters);		
-		double centerY = cameraOffsetYPix + yB2 + (analazysResult.bodyCenter.y / this.pxInMeters);
+		double centerX = cameraOffsetXPix - xB2 + (bodyRotator.getCenterBody().x / this.pxInMeters);		
+		double centerY = cameraOffsetYPix + yB2 + (bodyRotator.getCenterBody().y / this.pxInMeters);
 		
 		
 		if(drawFocusPoints) {
@@ -246,7 +256,7 @@ public class DrawComp extends JComponent{
 		}
 
 		if(drawEllipse) {
-			drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, analazysResult.bodyCenter, centerX, centerY);
+			drawEllipse(g2, analazysResult.a / pxInMeters, analazysResult.b / pxInMeters, degreeRadians, bodyRotator.getCenterBody(), centerX, centerY);
 		}
 	}
 	
@@ -613,6 +623,15 @@ public class DrawComp extends JComponent{
 		loadColorPreset(this.defaultColorPreset);
 	}
 	
+//--------------------------------------------------------------------------------------------------
+	//ANALYSATION
+	public void onAnalysationStart(){
+		this.setShouldRepaint(true);
+	}
+	
+	public void onAnalysationFinish(){
+		this.setShouldRepaint(true);
+	}
 //--------------------------------------------------------------------------------------------------
 	//GETTERS
 	public Color getColorBackground() {

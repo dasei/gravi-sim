@@ -106,6 +106,14 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pBodyList.add(bBodyListStopFollow);
+			
+			JButton bBodyListAnalyze = new JButton("analyze");
+			bBodyListAnalyze.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().startAnalyzation(new Body[] {(Body) boxBodyList.getSelectedItem()});
+				}				
+			});
+			pBodyList.add(bBodyListAnalyze);
 		pOptionContainer.add(pBodyList);
 			
 		//----------------------------------------------------------------------------------------------------
@@ -135,7 +143,7 @@ public class WindowOptions extends JFrame{
 			JButton bAnalyze = new JButton("analyze");
 			bAnalyze.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					Main.getController().startAnalyzation();
+					Main.getController().startAnalyzation(Main.getController().getBodies().toArray(new Body[0]));
 				}
 			});
 			pOptionMisc.add(bAnalyze);

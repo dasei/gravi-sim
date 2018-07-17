@@ -11,8 +11,13 @@ public class EventManager implements KeyListener{
 			Main.getController().getWindowOptions().updateBodyList();
 	}
 	
+	public static void onAnalyzationStart() {
+		Main.getController().getWindow().getDrawComp().onAnalysationStart();
+	}
+	
 	public static void onAnalyzationFinish() {
 		Main.getController().getWindowOptions().onAnalyzationFinish();
+		Main.getController().getWindow().getDrawComp().onAnalysationFinish();
 	}
 	
 	public static void onOptionWindowMdklSChange() {

@@ -44,7 +44,8 @@ public class Templates {
 		
 		Body mars = new Body(sun, true, true, MASS_MARS, 0, -227900000000d, 24000, 0, false, "Mars", DENSITY_MARS);
 		
-		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 13070, 0, false, "Jupiter", DENSITY_JUPITER);
+//		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 13070, 0, false, "Jupiter", DENSITY_JUPITER);
+		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 1370, 0, false, "Jupiter", DENSITY_JUPITER);
 		
 		Body saturn = new Body(sun, true, true, MASS_SATURN, 0, -1433500000000d, 9690, 0, false, "Saturn", DENSITY_SATURN);
 		

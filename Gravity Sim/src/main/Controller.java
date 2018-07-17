@@ -24,7 +24,9 @@ public class Controller {
 	private SimulationState state = SimulationState.SIMULATING;
 	
 	//Ellipse zeichnen
-	private AnalazysResult analazysResult;
+	//private AnalazysResult analazysResult; => Bodies
+	private Body[] bodiesToAnalyze;
+	
 	
 	//Follow mode
 	private Body bodyToFollow;
@@ -60,9 +62,15 @@ public class Controller {
 					if(bodies != null) {
 						if(state == SimulationState.SIMULATING)
 							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
-						else if(state == SimulationState.ANALIZING) {//							
-							analazysResult = Physics.runAnalizis(bodies, bodies.get(1), bodies.get(2), timeMdklSIterationSeconds*10);
-//							analazysResult = Physics.runAnalizis(bodies, bodies.get(0), bodies.get(1), timeMdklSIterationSeconds*10);
+						else if(state == SimulationState.ANALIZING) {//
+							EventManager.onAnalyzationStart();
+							for(Body b : bodiesToAnalyze){
+								if(b.getCenterBody() == null)
+									continue;
+								
+								b.setAnalysisResult(Physics.runAnalizis(bodies, b.getCenterBody(), b, timeMdklSIterationSeconds*10000));
+							}
+							
 							state = SimulationState.SIMULATING;
 							EventManager.onAnalyzationFinish();
 						}else if(state == SimulationState.PAUSED)
@@ -108,14 +116,21 @@ public class Controller {
 		return true;
 	}
 	
-	public boolean startAnalyzation() {
+//	public boolean startAnalyzation() {
+//		
+//		if(!pause())
+//			return false;
+//		
+//		this.setSimulationState(SimulationState.ANALIZING);
+//		
+//		return true;
+//	}
+	
+	public void startAnalyzation(Body[] bodies) {
 		
-		if(!pause())
-			return false;
+		this.bodiesToAnalyze = bodies;
 		
 		this.setSimulationState(SimulationState.ANALIZING);
-		
-		return true;
 	}
 	
 	
@@ -159,9 +174,9 @@ public class Controller {
 		return this.state;
 	}
 	
-	public AnalazysResult getAnalazysResult() {
-		return this.analazysResult;
-	}
+//	public AnalazysResult getAnalazysResult() {
+//		return this.analazysResult;
+//	}
 	
 	public Body getBodyToFollow() {
 		return this.bodyToFollow;

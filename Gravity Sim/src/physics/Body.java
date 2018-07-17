@@ -5,6 +5,7 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 import main.Main;
+import physics.Physics.AnalazysResult;
 
 public class Body {
 	public double mass;
@@ -35,6 +36,13 @@ public class Body {
 	private String gifUrl;
 	private Image gif;
 	private float gifPadding = 0;
+	
+	/**
+	 * specifies the body this body is rotating around
+	 */
+	private Body centerBody;
+	
+	private AnalazysResult analasysResult; 
 	
 //	public Body(double mass, double x, double y, double vx, double vy, boolean posFixed){
 //		
@@ -70,6 +78,7 @@ public class Body {
 	 * is added to  x & y / xx & vy  
 	 */
 	public Body(Body reference, boolean usePosition, boolean useSpeed, double mass, double x, double y, double vx, double vy, boolean posFixed, String name, double density){
+		this.centerBody = reference;
 		this.mass = mass;
 		this.x = x;
 		this.y = y;
@@ -192,5 +201,21 @@ public class Body {
 	
 	public String getName(){
 		return this.name;
+	}
+	
+	public void setCenterBody(Body body){
+		this.centerBody = body;
+	}
+	
+	public Body getCenterBody(){
+		return this.centerBody;
+	}
+	
+	public void setAnalysisResult(AnalazysResult result){
+		this.analasysResult = result;
+	}
+	
+	public AnalazysResult getAnalysisResult(){
+		return this.analasysResult;
 	}
 }
