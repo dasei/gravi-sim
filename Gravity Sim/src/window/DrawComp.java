@@ -227,7 +227,7 @@ public class DrawComp extends JComponent{
 		
 		
 		if(!drawEllipse && !drawFocusPoints)
-			return;		
+			return;		 
 		
 		AnalazysResult analazysResult = bodyRotator.getAnalysisResult();
 		
