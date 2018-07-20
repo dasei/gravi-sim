@@ -57,8 +57,6 @@ public class WindowOptions extends JFrame{
 		//TODO frame counter
 		//TODO punkte die relativ zur camera durch planeten erstellt werden (=> 'faden' (english))
 				
-		//TODO improve ellipse analyzation algorithm (reset after finish)
-		//TODO add stars
 		
 		//TODO add counter for time that has passes (in simulation)
 		//TODO   - add button to reset that time
@@ -134,6 +132,14 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pBodyPresets.add(bBodyPresetsSolarSystemLite);
+			
+			JButton bBodyPresetsSolarSystemMeteorite = new JButton("+ Meteorites");
+			bBodyPresetsSolarSystemMeteorite.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().loadBodySystemTemplates(BodySystemTemplate.SOLAR_SYSTEM_METEORITE);
+				}
+			});
+			pBodyPresets.add(bBodyPresetsSolarSystemMeteorite);
 		pOptionContainer.add(pBodyPresets);
 		
 		//----------------------------------------------------------------------------------------------------

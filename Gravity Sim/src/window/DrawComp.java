@@ -143,7 +143,6 @@ public class DrawComp extends JComponent{
 			if(drawWithDensity) {
 				float radiusWithPaddingPix;
 				for(Body b : bodies) {
-					//TODO ellipse auch nur zeichnen wenn die aufm Bildschirm sichtbar is
 					drawEllipseWithFocusPoints(g2, b);
 					
 					radiusPix = (int) ((b.radiusMeters / this.pxInMeters) * this.drawObjectScaleFactor);
@@ -170,8 +169,8 @@ public class DrawComp extends JComponent{
 				radiusPix = (int)(5 * this.drawObjectScaleFactor);
 				float radiusWithPaddingPix;
 				for(Body b : bodies) {
-					//TODO ellipse auch nur zeichnen wenn die aufm Bildschirm sichtbar is
 					drawEllipseWithFocusPoints(g2, b);
+					
 					
 					if(!isBodyVisibleOnScreen(b, radiusPix))
 						continue;
@@ -223,8 +222,9 @@ public class DrawComp extends JComponent{
 	}
 	
 	private void drawEllipseWithFocusPoints(Graphics2D g2, Body bodyRotator) {
-		if(bodyRotator.getAnalysisResult() == null)
+		if(bodyRotator.getAnalysisResult() == null || !isEllipseVisibleOnScreen(bodyRotator))
 			return;
+		
 		
 		if(!drawEllipse && !drawFocusPoints)
 			return;		
@@ -369,6 +369,9 @@ public class DrawComp extends JComponent{
 		g.setFont(fontInfoTags);
 		
 		for(Body body : bodies){
+			if(body.getName().equals(""))
+				continue;
+			
 			//Background (background rectangle)
 			g.setColor(colorBackground);
 			g.fillRect(body.infoTagXPix + 10, body.infoTagYPix + 10, body.infoTagWidthPix + 4, body.infoTagHeightPix);
@@ -550,7 +553,22 @@ public class DrawComp extends JComponent{
 				&& position.x - radiusPix < this.getWidth() 
 				&& position.y + radiusPix > 0 
 				&& position.y - radiusPix < this.getHeight();   
-		}
+	}
+	
+	private boolean isEllipseVisibleOnScreen(Body body) {
+		if(body.getAnalysisResult() == null)
+			return false;
+		
+		AnalazysResult result = body.getAnalysisResult();
+		Point position = getPositionOnCoordinateSystemInPixels(result.bodyCenter.x, result.bodyCenter.y);
+		
+		int aPix = (int) (result.a / this.pxInMeters);
+		
+		return	position.x + aPix > 0
+				&& position.x - aPix < this.getWidth()
+				&& position.y + aPix > 0
+				&& position.y - aPix < this.getHeight();
+	}
 	
 //--------------------------------------------------------------------------------------------------
 	//MOVEMENT

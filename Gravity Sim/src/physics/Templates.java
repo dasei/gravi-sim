@@ -44,8 +44,8 @@ public class Templates {
 		
 		Body mars = new Body(sun, true, true, MASS_MARS, 0, -227900000000d, 24000, 0, false, "Mars", DENSITY_MARS);
 		
-//		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 13070, 0, false, "Jupiter", DENSITY_JUPITER);
-		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 1370, 0, false, "Jupiter", DENSITY_JUPITER);
+		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 13070, 0, false, "Jupiter", DENSITY_JUPITER);
+//		Body jupiter = new Body(sun, true, true, MASS_JUPITER, 0, -778360000000d, 1370, 0, false, "Jupiter", DENSITY_JUPITER);
 		
 		Body saturn = new Body(sun, true, true, MASS_SATURN, 0, -1433500000000d, 9690, 0, false, "Saturn", DENSITY_SATURN);
 		
@@ -57,6 +57,9 @@ public class Templates {
 		
 		bodies.add(venus);		
 		
+		bodies.add(moon);
+		bodies.add(earth);
+		
 		bodies.add(mars);
 		
 		bodies.add(jupiter);
@@ -67,8 +70,6 @@ public class Templates {
 		
 		bodies.add(neptune);
 		
-		bodies.add(moon);
-		bodies.add(earth);
 		
 		bodies.add(sun);
 		
@@ -96,62 +97,73 @@ public class Templates {
 		return bodies;
 	}
 	
-	public static ArrayList<Body> loadMeteorite() {
-		ArrayList<Body> bodies = new ArrayList<Body>();
+	public static ArrayList<Body> loadSolarsystemMeteorites(){
+		ArrayList<Body> bodies = loadSolarsystemComplete();
 		
-		bodies.add(new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
-		bodies.add(new Body(MASS_EARTH, 0, -150E9, 20000, 10000, false, "earth", DENSITY_EARTH));
-		
-		return bodies;
-	}
-	
-	public static ArrayList<Body> loadSolarsystemDoubled() {
-		ArrayList<Body> bodies = new ArrayList<Body>();
-		
-		bodies.add(new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
-		
-		bodies.add(new Body(MASS_EARTH, 0, -150E9, 30000, 0, false, "Erde 1", DENSITY_EARTH));
-		bodies.add(new Body(MASS_EARTH, 0, 150E9, -30000, 0, false, "Erde 2", DENSITY_EARTH));
-		
-		return bodies;
-	}
-	
-	public static ArrayList<Body> loadMeteoriteDoubled() {
-		ArrayList<Body> bodies = new ArrayList<Body>();
-		
-		bodies.add(new Body(MASS_EARTH, 0, 0, 0, 0, true, "", DENSITY_SUN));
-		
-		bodies.add(new Body(MASS_EARTH, 0, -150E9, 20000, 10000, false, "", DENSITY_EARTH));
-		bodies.add(new Body(MASS_EARTH, 0, 150E9, 20000, -9500, false, "", DENSITY_EARTH));
-		
-		return bodies;
-	}
-	
-	/**
-	 * pxPerMeter scale about 100000
-	 */
-	public static ArrayList<Body> loadRandom(int amount){
-		ArrayList<Body> bodies = new ArrayList<Body>();
-		
-		
-		for(int i = 0; i < amount; i++){
-			
-			bodies.add(
-				new Body(
-					MASS_EARTH,
-					Math.random()*50000000*2 - 50000000 ,
-					Math.random()*50000000*2 - 50000000 ,
-					Math.random()*5000*2 - 2500,
-					Math.random()*5000*2 - 2500,
-					false,
-					"",
-					1
-				)
-			);
-			
+		for(int i = 0; i < 100; i++) {
+			bodies.add(new Body(MASS_MOON, 600000000000d, (i*5000000000d) - 250000000000d, -1000, 0, false, "", DENSITY_MOON));
 		}
 		
-		
 		return bodies;
-	}	
+	}
+	
+//	public static ArrayList<Body> loadMeteorite() {
+//		ArrayList<Body> bodies = new ArrayList<Body>();
+//		
+//		bodies.add(new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
+//		bodies.add(new Body(MASS_EARTH, 0, -150E9, 20000, 10000, false, "earth", DENSITY_EARTH));
+//		
+//		return bodies;
+//	}
+//	
+//	public static ArrayList<Body> loadSolarsystemDoubled() {
+//		ArrayList<Body> bodies = new ArrayList<Body>();
+//		
+//		bodies.add(new Body(MASS_SUN, 0, 0, 0, 0, true, "Sonne", DENSITY_SUN));
+//		
+//		bodies.add(new Body(MASS_EARTH, 0, -150E9, 30000, 0, false, "Erde 1", DENSITY_EARTH));
+//		bodies.add(new Body(MASS_EARTH, 0, 150E9, -30000, 0, false, "Erde 2", DENSITY_EARTH));
+//		
+//		return bodies;
+//	}
+//	
+//	public static ArrayList<Body> loadMeteoriteDoubled() {
+//		ArrayList<Body> bodies = new ArrayList<Body>();
+//		
+//		bodies.add(new Body(MASS_EARTH, 0, 0, 0, 0, true, "", DENSITY_SUN));
+//		
+//		bodies.add(new Body(MASS_EARTH, 0, -150E9, 20000, 10000, false, "", DENSITY_EARTH));
+//		bodies.add(new Body(MASS_EARTH, 0, 150E9, 20000, -9500, false, "", DENSITY_EARTH));
+//		
+//		return bodies;
+//	}
+//	
+//	/**
+//	 * pxPerMeter scale about 100000
+//	 */
+//	public static ArrayList<Body> loadRandom(int amount){
+//		ArrayList<Body> bodies = new ArrayList<Body>();
+//		
+//		
+//		for(int i = 0; i < amount; i++){
+//			
+//			bodies.add(
+//				new Body(
+//					MASS_EARTH,
+//					Math.random()*50000000*2 - 50000000 ,
+//					Math.random()*50000000*2 - 50000000 ,
+//					Math.random()*5000*2 - 2500,
+//					Math.random()*5000*2 - 2500,
+//					false,
+//					"",
+//					1
+//				)
+//			);
+//			
+//		}
+//		
+//		
+//		return bodies;
+//	}
+	
 }

@@ -38,13 +38,9 @@ public class Controller {
 		
 		windowOptions = new WindowOptions();
 	
+		System.out.print("loading template... ");
 		bodies = Templates.loadSolarsystemComplete();
-		
-		
-//		for(int i = 0; i < 2000000; i++) {
-//			Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
-//		}
-//		System.out.println("woop");
+		System.out.println("finished");
 		
 		window.getDrawComp().positionPointAt(0, 0, 0, 0);
 		startLoop();
@@ -68,7 +64,7 @@ public class Controller {
 								if(b.getCenterBody() == null)
 									continue;
 								
-								b.setAnalysisResult(Physics.runAnalizis(bodies, b.getCenterBody(), b, timeMdklSIterationSeconds*10000));
+								b.setAnalysisResult(Physics.runAnalizis(bodies, b.getCenterBody(), b, timeMdklSIterationSeconds*1000));
 							}
 							
 							state = SimulationState.SIMULATING;
@@ -138,13 +134,17 @@ public class Controller {
 	//FOLLOW MODE
 	public void follow(Body body) {
 		this.bodyToFollow = body;
+		System.out.println("set body to follow: " + body);
 	}
 	
 //--------------------------------------------------------------------------------------------------
 	//SETTERS
 	
 	public void loadBodySystemTemplates(BodySystemTemplate bodySystemTemplate){
+		this.bodyToFollow = null;
+		this.bodiesToAnalyze = null;
 		this.bodies = bodySystemTemplate.getBodies();
+		windowOptions.updateBodyList();
 	}
 	
 	private void setSimulationState(SimulationState state) {
