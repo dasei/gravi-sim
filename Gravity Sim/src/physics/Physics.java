@@ -207,7 +207,6 @@ public class Physics {
 			bodies.get(b).vy = bodiesBeforeSpeedY[b];
 		}
 		
-		
 		return new AnalazysResult(minDistance, minDistanceDegree, maxDistance, maxDistanceDegree, centerBody);		
 	}
 
@@ -264,7 +263,7 @@ public class Physics {
 		public AnalazysResult(double minDistance, double minDistanceDegree, double maxDistance, double maxDistanceDegree, Body bodyCenter) {
 			this.minDistance = minDistance;
 			this.minDistanceDegree = minDistanceDegree;
-			
+						
 			this.maxDistance = maxDistance;
 			this.maxDistanceDegree = maxDistanceDegree;
 			

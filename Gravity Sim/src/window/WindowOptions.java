@@ -113,6 +113,21 @@ public class WindowOptions extends JFrame{
 			});
 			pBodyList.add(bBodyListAnalyze);
 		pOptionContainer.add(pBodyList);
+		
+		//----------------------------------------------------------------------------------------------------
+		//Option for pausing and resuming simulation
+		JPanel pOptionMisc = new JPanel();
+		
+			JButton bAnalyseAll = new JButton("analyze all");
+			bAnalyseAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().startAnalyzation(Main.getController().getBodies().toArray(new Body[0]));
+				}
+			});
+			pOptionMisc.add(bAnalyseAll);
+		
+		pOptionContainer.add(pOptionMisc);
+		
 			
 		//----------------------------------------------------------------------------------------------------
 		//Body presets
@@ -141,21 +156,6 @@ public class WindowOptions extends JFrame{
 			});
 			pBodyPresets.add(bBodyPresetsSolarSystemMeteorite);
 		pOptionContainer.add(pBodyPresets);
-		
-		//----------------------------------------------------------------------------------------------------
-		//Option for pausing and resuming simulation
-		JPanel pOptionMisc = new JPanel();
-			
-			JButton bAnalyze = new JButton("analyze");
-			bAnalyze.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Main.getController().startAnalyzation(Main.getController().getBodies().toArray(new Body[0]));
-				}
-			});
-			pOptionMisc.add(bAnalyze);
-			
-		pOptionContainer.add(pOptionMisc);
-		
 		
 		
 		

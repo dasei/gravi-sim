@@ -33,6 +33,7 @@ public class Templates {
 		sun.setGIF("res/gifsFinal/sun.gif", -0.5f);
 		
 		Body mercury = new Body(sun, true, true, MASS_MERCURY, 0, -57909000000d, 47360, 0, false, "Merkur", DENSITY_MERCURY);
+//		Body mercury = new Body(sun, true, true, MASS_MERCURY, 0, -57909000000d, 4360, 0, false, "Merkur", DENSITY_MERCURY);
 		
 		Body venus = new Body(sun, true, true, MASS_VENUS, 0, -108160000000d, 35020, 0, false, "Venus", DENSITY_VENUS);
 		
