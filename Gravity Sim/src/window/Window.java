@@ -16,7 +16,7 @@ public class Window extends JFrame{
 	private static final long serialVersionUID = 335663715638775223L;
 	
 	//Components:
-	private DrawComp dc;
+	private final DrawComp dc;
 	
 	private boolean isInFullscreenMode = false;
 //	private JComboBox<String> optTool;
@@ -96,12 +96,6 @@ public class Window extends JFrame{
 						}catch(Exception exc) {}
 						continue;
 					}
-					
-					bodyToFollow = Main.getController().getBodyToFollow();
-					if(bodyToFollow != null) {
-						dc.centerCamera(bodyToFollow.x, bodyToFollow.y);
-					}
-					
 					
 					dc.repaint();
 					try {

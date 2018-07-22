@@ -101,7 +101,7 @@ public class Templates {
 	public static ArrayList<Body> loadSolarsystemMeteorites(){
 		ArrayList<Body> bodies = loadSolarsystemComplete();
 		
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < 1000; i++) {
 			bodies.add(new Body(MASS_MOON, 600000000000d, (i*5000000000d) - 250000000000d, -1000, 0, false, "", DENSITY_MOON));
 		}
 		

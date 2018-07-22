@@ -412,6 +412,19 @@ public class WindowOptions extends JFrame{
 		pOptionContainer.add(pOptionCheckboxes1);
 		
 		
+		//----------------------------------------------------------------------------------------------------
+		//Option for checkboxes (2)
+		
+		JPanel pOptionCheckboxes2 = new JPanel();
+			JCheckBox checkboxOptionOnlyDrawEllipseIfBodyVisible = new JCheckBox("Only draw El. if B. vis.", DrawComp.onlyDrawEllipseIfBodyVisibleOnDefault);
+			checkboxOptionOnlyDrawEllipseIfBodyVisible.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setOnlyDrawEllipseIfBodyVisible(checkboxOptionOnlyDrawEllipseIfBodyVisible.isSelected());
+				}
+			});
+			pOptionCheckboxes2.add(checkboxOptionOnlyDrawEllipseIfBodyVisible);
+		pOptionContainer.add(pOptionCheckboxes2);
+		
 		
 		this.pack();
 		//create rigid area so that the other components gets pushed upwards all the way

@@ -6,14 +6,13 @@ import events.EventManager;
 import physics.Body;
 import physics.BodySystemTemplate;
 import physics.Physics;
-import physics.Physics.AnalazysResult;
 import physics.Templates;
 import window.Window;
 import window.WindowOptions;
 
 public class Controller {
-	private Window window;
-	private WindowOptions windowOptions;
+	private final Window window;
+	private final WindowOptions windowOptions;
 	
 	private ArrayList<Body> bodies;	
 	
@@ -75,6 +74,11 @@ public class Controller {
 							}catch(Exception e) {}
 					}
 					
+					bodyToFollow = Main.getController().getBodyToFollow();
+					if(bodyToFollow != null) {
+						Main.getController().getWindow().getDrawComp().centerCamera(bodyToFollow.x, bodyToFollow.y);
+					}					
+					
 					//sleep
 					if(timeLoopSleepMS > 0)
 						try {
@@ -134,7 +138,6 @@ public class Controller {
 	//FOLLOW MODE
 	public void follow(Body body) {
 		this.bodyToFollow = body;
-		System.out.println("set body to follow: " + body);
 	}
 	
 //--------------------------------------------------------------------------------------------------

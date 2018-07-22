@@ -18,12 +18,13 @@ import javax.swing.SwingUtilities;
 import main.Controller;
 import main.Main;
 import physics.Body;
-import physics.Functions;
 import physics.Physics.AnalazysResult;
 
 
 public class DrawComp extends JComponent{
 	private static final long serialVersionUID = 41048338189849420L;
+	
+	public static final String BACKGROUND_IMAGE_PATH = "res/background/galaxy.jpg";
 	
 	public static enum ColorPreset{
 		LIGHT(new Color(255, 255, 255), new Color(96, 101, 109), new Color(0, 0, 0)), 
@@ -68,6 +69,8 @@ public class DrawComp extends JComponent{
 	private boolean drawEllipse = drawEllipseOnDefault;
 	public static final boolean drawBackgroundImageOnDefault = false;
 	private boolean drawBackgroundImage = drawBackgroundImageOnDefault;
+	public static final boolean onlyDrawEllipseIfBodyVisibleOnDefault = true;
+	private boolean onlyDrawEllipseIfBodyVisible = onlyDrawEllipseIfBodyVisibleOnDefault;
 	
 	public static final float defaultDrawObjectScaleFactor = 1;
 	private float drawObjectScaleFactor = defaultDrawObjectScaleFactor;
@@ -87,30 +90,23 @@ public class DrawComp extends JComponent{
 	
 	private Image imageBackground;
 	
-	public static final int FPSMAX = 60;
-	private long tmpTimeStart;
+//	public static final int FPSMAX = 60;
+//	private long tmpTimeStart;
 	
 	public static final Font fontScaleDefault = new Font("Dialog", Font.PLAIN, 12);
 	public static final Font fontInfoTagsDefault = new Font("Dialog", Font.PLAIN, 12);
 	private Font fontInfoTags = fontInfoTagsDefault;
 	
 	public DrawComp() {
-		//TODO do this modular (maybe JTextField)
-		try{
-			this.imageBackground = ImageIO.read(new File("res/background/galaxy.jpg"));
-		}catch(Exception exc){
-			exc.printStackTrace();
-		}
-		
-		this.setOpaque(true);
-		loadColorPreset(defaultColorPreset);		
+//		this.setOpaque(true);
+		loadColorPreset(defaultColorPreset);
 	}
 	
 	public void paintComponent(Graphics g) {
 		if(!shouldRepaint)
 			return;
 		
-		tmpTimeStart = System.currentTimeMillis();
+//		tmpTimeStart = System.currentTimeMillis();
 		
 		Graphics2D g2 = (Graphics2D) g;
 		
@@ -128,6 +124,8 @@ public class DrawComp extends JComponent{
 			this.centerCamera((this.lastWidth/2 - this.cameraOffsetXPix) * this.pxInMeters, (this.lastHeight/2 - this.cameraOffsetYPix) * this.pxInMeters);
 		}
 		
+		//focus Camera on bodyToFollow or apply mouse drag 
+		
 		this.applyMouseDrag();
 		
 		
@@ -141,18 +139,50 @@ public class DrawComp extends JComponent{
 		if(bodies != null){
 			g2.setColor(colorForeground);
 			
+			boolean bodyVisible;
 			if(drawWithDensity) {
 				float radiusWithPaddingPix;
 				for(Body b : bodies) {
-					drawEllipseWithFocusPoints(g2, b);
-					
 					radiusPix = (int) ((b.radiusMeters / this.pxInMeters) * this.drawObjectScaleFactor);
-					if(!isBodyVisibleOnScreen(b, radiusPix))
-						continue;
+					bodyVisible = isBodyVisibleOnScreen(b, radiusPix);
 					
-					if(this.drawGIFs && b.getGIF() != null) {
-						radiusWithPaddingPix = (1 - b.getGIFPadding()) * radiusPix;
-						if(radiusWithPaddingPix > 2) {					
+					if(bodyVisible || !onlyDrawEllipseIfBodyVisible)
+						drawEllipseWithFocusPoints(g2, b);
+					
+					
+					if(bodyVisible) {					
+						if(this.drawGIFs && b.getGIF() != null) {
+							radiusWithPaddingPix = (1 - b.getGIFPadding()) * radiusPix;
+							if(radiusWithPaddingPix > 2) {					
+								g2.drawImage(
+										b.getGIF(), 
+										(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
+										(int) (cameraOffsetYPix + (b.y/pxInMeters) - (radiusWithPaddingPix)), 
+										(int) (radiusWithPaddingPix * 2) + 2,
+										(int) (radiusWithPaddingPix * 2) + 2,
+										null);
+							}
+						}
+						
+						if(this.drawBodyOutline)
+							g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
+						
+					}
+				}				
+			}else {
+				radiusPix = (int)(5 * this.drawObjectScaleFactor);
+				float radiusWithPaddingPix;
+				for(Body b : bodies) {
+					bodyVisible = isBodyVisibleOnScreen(b, radiusPix);
+					
+					if(bodyVisible || !onlyDrawEllipseIfBodyVisible)
+						drawEllipseWithFocusPoints(g2, b);
+					
+					
+					if(bodyVisible) {
+						if(this.drawGIFs && b.getGIF() != null) {
+							radiusWithPaddingPix = (1 - b.getGIFPadding()) * radiusPix;
+												
 							g2.drawImage(
 									b.getGIF(), 
 									(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
@@ -161,35 +191,10 @@ public class DrawComp extends JComponent{
 									(int) (radiusWithPaddingPix * 2) + 2,
 									null);
 						}
+						
+						if(this.drawBodyOutline)
+							g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
 					}
-					
-					if(this.drawBodyOutline)
-						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);
-				}				
-			}else {
-				radiusPix = (int)(5 * this.drawObjectScaleFactor);
-				float radiusWithPaddingPix;
-				for(Body b : bodies) {
-					drawEllipseWithFocusPoints(g2, b);
-					
-					
-					if(!isBodyVisibleOnScreen(b, radiusPix))
-						continue;
-					
-					if(this.drawGIFs && b.getGIF() != null) {
-						radiusWithPaddingPix = (1 - b.getGIFPadding()) * radiusPix;
-											
-						g2.drawImage(
-								b.getGIF(), 
-								(int) (cameraOffsetXPix + (b.x/pxInMeters) - (radiusWithPaddingPix)),
-								(int) (cameraOffsetYPix + (b.y/pxInMeters) - (radiusWithPaddingPix)), 
-								(int) (radiusWithPaddingPix * 2) + 2,
-								(int) (radiusWithPaddingPix * 2) + 2,
-								null);
-					}
-					
-					if(this.drawBodyOutline)
-						g2.drawOval(cameraOffsetXPix + (int)(b.x/pxInMeters) - radiusPix, cameraOffsetYPix + (int)(b.y/pxInMeters) - radiusPix, radiusPix*2, radiusPix*2);					
 				}
 			}
 			
@@ -213,13 +218,13 @@ public class DrawComp extends JComponent{
 		lastHeight = this.getHeight();
 		
 		
-		//wait, so that MAXFPS wont be overstepped
-		long tmpTimeTaken = System.currentTimeMillis() - tmpTimeStart;
-		if(tmpTimeTaken < 1000/FPSMAX)
-			try {
-				Thread.sleep(1000/FPSMAX - tmpTimeTaken);
-			}catch(Exception e) {
-			}
+//		//wait, so that MAXFPS wont be overstepped
+//		long tmpTimeTaken = System.currentTimeMillis() - tmpTimeStart;
+//		if(tmpTimeTaken < 1000/FPSMAX)
+//			try {
+//				Thread.sleep(1000/FPSMAX - tmpTimeTaken);
+//			}catch(Exception e) {
+//			}
 	}
 	
 	private void drawEllipseWithFocusPoints(Graphics2D g2, Body bodyRotator) {
@@ -386,11 +391,23 @@ public class DrawComp extends JComponent{
 	}
 	
 	private void drawBackground(Graphics2D g2){
-		if(!this.drawBackgroundImage || this.imageBackground == null){
+		if(!this.drawBackgroundImage){
 			g2.setColor(colorBackground);
 			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-		}else
-			g2.drawImage(imageBackground, 0, 0, null);
+			return;
+		}
+		
+		if(this.imageBackground == null)
+			try{
+				this.imageBackground = ImageIO.read(new File(BACKGROUND_IMAGE_PATH));
+			}catch(Exception exc){
+				exc.printStackTrace();
+			}
+		
+		if(this.imageBackground == null)
+			return;
+			
+		g2.drawImage(imageBackground, 0, 0, null);
 	}
 	
 	private final int scaleOffsetX = 50;
@@ -723,5 +740,9 @@ public class DrawComp extends JComponent{
 	
 	public void setDrawBackgroundImage(boolean drawBackgroundImage){
 		this.drawBackgroundImage = drawBackgroundImage;
+	}
+	
+	public void setOnlyDrawEllipseIfBodyVisible(boolean onlyDrawEllipseIfBodyVisible) {
+		this.onlyDrawEllipseIfBodyVisible = onlyDrawEllipseIfBodyVisible;
 	}
 }
