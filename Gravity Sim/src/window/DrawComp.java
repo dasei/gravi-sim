@@ -71,6 +71,9 @@ public class DrawComp extends JComponent{
 	private boolean drawBackgroundImage = drawBackgroundImageOnDefault;
 	public static final boolean onlyDrawEllipseIfBodyVisibleOnDefault = true;
 	private boolean onlyDrawEllipseIfBodyVisible = onlyDrawEllipseIfBodyVisibleOnDefault;
+	public static final boolean drawTimePassedOnDefault = false;
+	private boolean drawTimePassed = drawTimePassedOnDefault;
+	
 	
 	public static final float defaultDrawObjectScaleFactor = 1;
 	private float drawObjectScaleFactor = defaultDrawObjectScaleFactor;
@@ -96,6 +99,8 @@ public class DrawComp extends JComponent{
 	public static final Font fontScaleDefault = new Font("Dialog", Font.PLAIN, 12);
 	public static final Font fontInfoTagsDefault = new Font("Dialog", Font.PLAIN, 12);
 	private Font fontInfoTags = fontInfoTagsDefault;
+	
+	public static final Font fontTimePassed = new Font("consolas", Font.BOLD, 15); 
 	
 	public DrawComp() {
 //		this.setOpaque(true);
@@ -210,6 +215,7 @@ public class DrawComp extends JComponent{
 		
 
 		this.drawScale(g2);
+		this.drawTime(g2);
 		
 		
 		//save last width & height, to notice when component was resized (also maximized or minimized)
@@ -502,7 +508,7 @@ public class DrawComp extends JComponent{
 		if(scaleText == null)
 			recalcScale(g2);
 		
-		g2.setColor(Color.DARK_GRAY);		
+		g2.setColor(colorMidground);		
 		g2.drawRect(this.getWidth() - scaleOffsetX - (int) this.scaleLengthPix, this.getHeight() - scaleOffsetY - this.scaleBarThickness, (int) this.scaleLengthPix, this.scaleBarThickness);
 		
 		
@@ -514,6 +520,17 @@ public class DrawComp extends JComponent{
 			);
 		
 	}
+	
+	private void drawTime(Graphics2D g) {
+		if(!this.drawTimePassed)
+			return;
+		
+		g.setColor(colorMidground);
+		g.setFont(fontTimePassed);
+		g.drawString("Time passed: " + Main.getController().getTimePassed(), 0, 30);
+	}
+	
+	
 	
 //--------------------------------------------------------------------------------------------------
 	//Logic
@@ -744,5 +761,9 @@ public class DrawComp extends JComponent{
 	
 	public void setOnlyDrawEllipseIfBodyVisible(boolean onlyDrawEllipseIfBodyVisible) {
 		this.onlyDrawEllipseIfBodyVisible = onlyDrawEllipseIfBodyVisible;
+	}
+	
+	public void setDrawTimePassed(boolean drawTimePassed) {
+		this.drawTimePassed = drawTimePassed;
 	}
 }

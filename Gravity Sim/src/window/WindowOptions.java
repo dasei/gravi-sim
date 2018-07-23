@@ -423,6 +423,14 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pOptionCheckboxes2.add(checkboxOptionOnlyDrawEllipseIfBodyVisible);
+			
+			JCheckBox checkboxOptionDrawTime = new JCheckBox("time", DrawComp.drawTimePassedOnDefault);
+			checkboxOptionDrawTime.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setDrawTimePassed(checkboxOptionDrawTime.isSelected());
+				}
+			});
+			pOptionCheckboxes2.add(checkboxOptionDrawTime);
 		pOptionContainer.add(pOptionCheckboxes2);
 		
 		
