@@ -47,6 +47,19 @@ public class Physics {
 	
 	public static AnalazysResult runAnalizis(ArrayList<Body> bodies, Body centerBody, Body target, double timeMdklSDeltaSeconds) {
 		
+		//store values of bodies before, so that bodies can be reset after analysis
+		double[] bodiesBeforeX = new double[bodies.size()];
+		double[] bodiesBeforeY = new double[bodies.size()];
+		double[] bodiesBeforeSpeedX = new double[bodies.size()];
+		double[] bodiesBeforeSpeedY = new double[bodies.size()];
+		for(int b = 0; b < bodies.size(); b++) {
+			bodiesBeforeX[b] = bodies.get(b).x;
+			bodiesBeforeY[b] = bodies.get(b).y;
+			bodiesBeforeSpeedX[b] = bodies.get(b).vx;
+			bodiesBeforeSpeedY[b] = bodies.get(b).vy;
+		}
+		
+		
 		//variables for storing max and min values
 		double minDistance = Double.MAX_VALUE, minDistanceDegree = 0;
 		double maxDistance = Double.MIN_VALUE, maxDistanceDegree = 0;
@@ -186,11 +199,15 @@ public class Physics {
 			}
 		}
 		
-		//System.out.println("analazys finished!");
-		return new AnalazysResult(minDistance, minDistanceDegree, maxDistance, maxDistanceDegree, centerBody);
-//		return null;
+		//reset bodies to state before analysis
+		for(int b = 0; b < bodies.size(); b++) {
+			bodies.get(b).x = bodiesBeforeX[b];
+			bodies.get(b).y = bodiesBeforeY[b];
+			bodies.get(b).vx = bodiesBeforeSpeedX[b];
+			bodies.get(b).vy = bodiesBeforeSpeedY[b];
+		}
 		
-//		Main.getController().getWindow().getDrawComp().setShouldRepaint(false);		
+		return new AnalazysResult(minDistance, minDistanceDegree, maxDistance, maxDistanceDegree, centerBody);		
 	}
 
 	
@@ -246,7 +263,7 @@ public class Physics {
 		public AnalazysResult(double minDistance, double minDistanceDegree, double maxDistance, double maxDistanceDegree, Body bodyCenter) {
 			this.minDistance = minDistance;
 			this.minDistanceDegree = minDistanceDegree;
-			
+						
 			this.maxDistance = maxDistance;
 			this.maxDistanceDegree = maxDistanceDegree;
 			

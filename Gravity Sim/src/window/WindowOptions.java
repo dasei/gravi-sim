@@ -57,8 +57,6 @@ public class WindowOptions extends JFrame{
 		//TODO frame counter
 		//TODO punkte die relativ zur camera durch planeten erstellt werden (=> 'faden' (english))
 				
-		//TODO improve ellipse analyzation algorithm (reset after finish)
-		//TODO add stars
 		
 		//TODO add counter for time that has passes (in simulation)
 		//TODO   - add button to reset that time
@@ -115,6 +113,21 @@ public class WindowOptions extends JFrame{
 			});
 			pBodyList.add(bBodyListAnalyze);
 		pOptionContainer.add(pBodyList);
+		
+		//----------------------------------------------------------------------------------------------------
+		//Option for pausing and resuming simulation
+		JPanel pOptionMisc = new JPanel();
+		
+			JButton bAnalyseAll = new JButton("analyze all");
+			bAnalyseAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().startAnalyzation(Main.getController().getBodies().toArray(new Body[0]));
+				}
+			});
+			pOptionMisc.add(bAnalyseAll);
+		
+		pOptionContainer.add(pOptionMisc);
+		
 			
 		//----------------------------------------------------------------------------------------------------
 		//Body presets
@@ -134,22 +147,15 @@ public class WindowOptions extends JFrame{
 				}
 			});
 			pBodyPresets.add(bBodyPresetsSolarSystemLite);
-		pOptionContainer.add(pBodyPresets);
-		
-		//----------------------------------------------------------------------------------------------------
-		//Option for pausing and resuming simulation
-		JPanel pOptionMisc = new JPanel();
 			
-			JButton bAnalyze = new JButton("analyze");
-			bAnalyze.addActionListener(new ActionListener() {
+			JButton bBodyPresetsSolarSystemMeteorite = new JButton("+ Meteorites");
+			bBodyPresetsSolarSystemMeteorite.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent e) {
-					Main.getController().startAnalyzation(Main.getController().getBodies().toArray(new Body[0]));
+					Main.getController().loadBodySystemTemplates(BodySystemTemplate.SOLAR_SYSTEM_METEORITE);
 				}
 			});
-			pOptionMisc.add(bAnalyze);
-			
-		pOptionContainer.add(pOptionMisc);
-		
+			pBodyPresets.add(bBodyPresetsSolarSystemMeteorite);
+		pOptionContainer.add(pBodyPresets);
 		
 		
 		
@@ -405,6 +411,19 @@ public class WindowOptions extends JFrame{
 			pOptionCheckboxes1.add(checkboxOptionDrawBackgroundImage);
 		pOptionContainer.add(pOptionCheckboxes1);
 		
+		
+		//----------------------------------------------------------------------------------------------------
+		//Option for checkboxes (2)
+		
+		JPanel pOptionCheckboxes2 = new JPanel();
+			JCheckBox checkboxOptionOnlyDrawEllipseIfBodyVisible = new JCheckBox("Only draw El. if B. vis.", DrawComp.onlyDrawEllipseIfBodyVisibleOnDefault);
+			checkboxOptionOnlyDrawEllipseIfBodyVisible.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Main.getController().getWindow().getDrawComp().setOnlyDrawEllipseIfBodyVisible(checkboxOptionOnlyDrawEllipseIfBodyVisible.isSelected());
+				}
+			});
+			pOptionCheckboxes2.add(checkboxOptionOnlyDrawEllipseIfBodyVisible);
+		pOptionContainer.add(pOptionCheckboxes2);
 		
 		
 		this.pack();

@@ -6,14 +6,13 @@ import events.EventManager;
 import physics.Body;
 import physics.BodySystemTemplate;
 import physics.Physics;
-import physics.Physics.AnalazysResult;
 import physics.Templates;
 import window.Window;
 import window.WindowOptions;
 
 public class Controller {
-	private Window window;
-	private WindowOptions windowOptions;
+	private final Window window;
+	private final WindowOptions windowOptions;
 	
 	private ArrayList<Body> bodies;	
 	
@@ -38,13 +37,9 @@ public class Controller {
 		
 		windowOptions = new WindowOptions();
 	
+		System.out.print("loading template... ");
 		bodies = Templates.loadSolarsystemComplete();
-		
-		
-//		for(int i = 0; i < 2000000; i++) {
-//			Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
-//		}
-//		System.out.println("woop");
+		System.out.println("finished");
 		
 		window.getDrawComp().positionPointAt(0, 0, 0, 0);
 		startLoop();
@@ -68,7 +63,7 @@ public class Controller {
 								if(b.getCenterBody() == null)
 									continue;
 								
-								b.setAnalysisResult(Physics.runAnalizis(bodies, b.getCenterBody(), b, timeMdklSIterationSeconds*10000));
+								b.setAnalysisResult(Physics.runAnalizis(bodies, b.getCenterBody(), b, timeMdklSIterationSeconds*1000));
 							}
 							
 							state = SimulationState.SIMULATING;
@@ -78,6 +73,11 @@ public class Controller {
 								Thread.sleep(10);
 							}catch(Exception e) {}
 					}
+					
+					bodyToFollow = Main.getController().getBodyToFollow();
+					if(bodyToFollow != null) {
+						Main.getController().getWindow().getDrawComp().centerCamera(bodyToFollow.x, bodyToFollow.y);
+					}					
 					
 					//sleep
 					if(timeLoopSleepMS > 0)
@@ -144,7 +144,10 @@ public class Controller {
 	//SETTERS
 	
 	public void loadBodySystemTemplates(BodySystemTemplate bodySystemTemplate){
+		this.bodyToFollow = null;
+		this.bodiesToAnalyze = null;
 		this.bodies = bodySystemTemplate.getBodies();
+		windowOptions.updateBodyList();
 	}
 	
 	private void setSimulationState(SimulationState state) {
