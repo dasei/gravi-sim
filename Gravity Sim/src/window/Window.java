@@ -62,7 +62,7 @@ public class Window extends JFrame{
 		
 		this.setUndecorated(fullscreen);
 		if(fullscreen){
-			setExtendedState(JFrame.MAXIMIZED_BOTH);			
+			setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}else{			
 			setExtendedState(JFrame.NORMAL);
 		}		
