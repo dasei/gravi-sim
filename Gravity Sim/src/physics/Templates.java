@@ -54,6 +54,12 @@ public class Templates {
 		
 		Body neptune = new Body(sun, true, true, MASS_NEPTUNE, 0, -4498400000000d, 5430, 0, false, "Neptun", DENSITY_NEPTUNE);
 		
+		Body ceres = new Body(sun, true, true, 9394E17, 413940000000d, 0, 0, 10000, false, "Ceres <- Asteroid", 2160);
+		
+		Body halley = new Body(sun, true, true, 2E17, 0, 8.76644E11, -4570, 0, false, "Halley <- Komet", 550);
+		
+		Body pluto = new Body(sun, true, true, 1.303E22, 0, 4.436774E12, -4670, 0, false, "Pluto", 1860);
+		
 		bodies.add(mercury);
 		
 		bodies.add(venus);		
@@ -71,6 +77,11 @@ public class Templates {
 		
 		bodies.add(neptune);
 		
+		bodies.add(ceres);
+		
+		bodies.add(halley);
+		
+		bodies.add(pluto);
 		
 		bodies.add(sun);
 		

@@ -26,6 +26,7 @@ public class Controller {
 	//private AnalazysResult analazysResult; => Bodies
 	private Body[] bodiesToAnalyze;
 	
+	private double timePassedSeconds;
 	
 	//Follow mode
 	private Body bodyToFollow;
@@ -55,9 +56,10 @@ public class Controller {
 					
 					//do physics
 					if(bodies != null) {
-						if(state == SimulationState.SIMULATING)
+						if(state == SimulationState.SIMULATING) {
 							Physics.physicsIteration(bodies, timeMdklSIterationSeconds);
-						else if(state == SimulationState.ANALIZING) {//
+							timePassedSeconds += timeMdklSIterationSeconds;
+						}else if(state == SimulationState.ANALIZING) {
 							EventManager.onAnalyzationStart();
 							for(Body b : bodiesToAnalyze){
 								if(b.getCenterBody() == null)
@@ -183,5 +185,14 @@ public class Controller {
 	
 	public Body getBodyToFollow() {
 		return this.bodyToFollow;
+	}
+	
+	public String getTimePassed() {
+		String time = "";
+		
+		int a = (int) (timePassedSeconds / 31536000d);
+		int d = (int) (timePassedSeconds % 31536000d / 86400d);
+		
+		return a + "a " + d + "d";
 	}
 }

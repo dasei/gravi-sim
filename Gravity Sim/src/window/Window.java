@@ -25,6 +25,7 @@ public class Window extends JFrame{
 	public Window() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("Gravitos - by Daniel and Ach");
 		
 		dc = new DrawComp();
 		dc.setPreferredSize(new Dimension(500,500));
